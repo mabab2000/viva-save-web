@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: savetracker-app
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    healthCheckPath: /
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /static/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_APP_NAME
+        value: SaveTracker
+      - key: VITE_APP_VERSION
+        value: "1.0.0"
+
+# Optional: If you plan to add a backend API later
+# - type: web
+#   name: savetracker-api
+#   runtime: node
+#   plan: free
+#   buildCommand: npm ci
+#   startCommand: npm start
+#   envVars:
+#     - key: NODE_ENV
+#       value: production
+
+databases: []
+
+# Note: You can add environment variables here or in the Render dashboard
+# For sensitive data like API keys, use the Render dashboard instead
