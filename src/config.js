@@ -1,0 +1,1 @@
+export const APP_BASE_URL = "https://saving-api.mababa.app/api";

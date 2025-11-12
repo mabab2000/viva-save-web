@@ -13,17 +13,19 @@ const Sidebar = ({ isOpen, activeSection, onSectionChange }) => {
       )
     },
     {
-      id: 'goals',
-      name: 'Savings Goals',
+      id: 'users',
+      name: 'Users',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a4 4 0 00-3-3.87" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20H4v-2a4 4 0 013-3.87" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 12a4 4 0 100-8 4 4 0 000 8z" />
         </svg>
       )
     },
     {
-      id: 'transactions',
-      name: 'Transactions',
+      id: 'savings',
+      name: 'Savings',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
@@ -31,21 +33,22 @@ const Sidebar = ({ isOpen, activeSection, onSectionChange }) => {
       )
     },
     {
-      id: 'analytics',
-      name: 'Analytics',
+      id: 'loans',
+      name: 'Loans',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a5 5 0 00-10 0v2" />
+          <rect width="20" height="8" x="2" y="9" rx="2" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 17v2a2 2 0 002 2h8a2 2 0 002-2v-2" />
         </svg>
       )
     },
     {
-      id: 'settings',
-      name: 'Settings',
+      id: 'penalties',
+      name: 'Penalties',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 5.636l-1.414 1.414A9 9 0 105.636 18.364l1.414-1.414A7 7 0 1116.95 7.05z" />
         </svg>
       )
     }
@@ -56,11 +59,9 @@ const Sidebar = ({ isOpen, activeSection, onSectionChange }) => {
       isOpen ? 'w-64' : 'w-16'
     }`}>
       {/* Logo Section */}
-      <div className="flex items-center p-6 border-b border-gray-200">
-        <div className="w-8 h-8 bg-gradient-to-r from-savings-blue to-savings-purple rounded-lg flex items-center justify-center">
-          <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/>
-          </svg>
+      <div className="flex items-center p-4 border-b border-gray-200">
+        <div className="w-10 h-10 rounded-lg overflow-hidden bg-white flex items-center justify-center">
+          <img src="/logo.png" alt="SaveTracker" className="w-full h-full object-cover" onError={(e)=>{e.target.style.display='none'}} />
         </div>
         {isOpen && (
           <div className="ml-3">
@@ -73,20 +74,11 @@ const Sidebar = ({ isOpen, activeSection, onSectionChange }) => {
       {/* Navigation Menu */}
       <nav className="mt-6">
         <div className="space-y-1 px-3">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => onSectionChange(item.id)}
-              className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${
-                activeSection === item.id
-                  ? 'bg-savings-blue text-white'
-                  : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-              }`}
-            >
-              <span className="flex-shrink-0">{item.icon}</span>
-              {isOpen && <span className="ml-3">{item.name}</span>}
-            </button>
-          ))}
+          <Link to="/dashboard" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'overview' ? 'bg-savings-blue text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[0].icon}</span> {isOpen && <span className="ml-3">Overview</span>} </Link>
+          <Link to="/dashboard/users" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'users' ? 'bg-savings-blue text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[1].icon}</span> {isOpen && <span className="ml-3">Users</span>} </Link>
+          <Link to="/dashboard/savings" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'savings' ? 'bg-savings-blue text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[2].icon}</span> {isOpen && <span className="ml-3">Savings</span>} </Link>
+          <Link to="/dashboard/loans" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'loans' ? 'bg-savings-blue text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[3].icon}</span> {isOpen && <span className="ml-3">Loans</span>} </Link>
+          <Link to="/dashboard/penalties" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'penalties' ? 'bg-savings-blue text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[4].icon}</span> {isOpen && <span className="ml-3">Penalties</span>} </Link>
         </div>
       </nav>
 

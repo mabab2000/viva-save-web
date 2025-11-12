@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { APP_BASE_URL } from '../config';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -8,9 +9,9 @@ const Login = () => {
     password: '',
     rememberMe: false
   });
-
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -53,23 +54,34 @@ const Login = () => {
     }
 
     setIsLoading(true);
-    
-    // Simulate API call
+    setApiError('');
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log('Login submitted:', formData);
-      
-      // Redirect to dashboard on successful login
-      navigate('/dashboard');
+      const response = await fetch(`${APP_BASE_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Save token and user info to localStorage
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('user_info', JSON.stringify(data.user_info));
+        navigate('/dashboard');
+      } else {
+        setApiError(data.detail || 'Login failed. Please check your credentials.');
+      }
     } catch (error) {
-      console.error('Login error:', error);
+      setApiError('Network error. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-savings-blue to-savings-purple p-5 relative overflow-hidden">
+  <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-savings-blue to-savings-purple p-5 relative overflow-x-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute inset-0" style={{
@@ -79,17 +91,14 @@ const Login = () => {
 
       {/* Header Section */}
       <div className="text-center mb-8 relative z-10">
-        <div className="w-20 h-20 mx-auto mb-5 bg-white bg-opacity-10 rounded-full flex items-center justify-center backdrop-blur-md border border-white border-opacity-20 animate-float">
-          <svg className="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/>
-          </svg>
-        </div>
-        <h1 className="text-white text-4xl font-bold mb-3 drop-shadow-lg">Welcome Back</h1>
-        <p className="text-white text-opacity-90 text-lg font-light">Sign in to your Savings Management Account</p>
+        
+       
+        <p className="text-white text-opacity-90 text-lg font-light">Sign in to Manage all savings (Only Admin) </p>
       </div>
 
       {/* Login Card */}
       <div className="bg-white bg-opacity-95 backdrop-blur-xl rounded-3xl p-10 w-full max-w-md shadow-2xl border border-white border-opacity-20 relative z-10">
+        {apiError && <div className="text-red-500 text-center mb-4 font-semibold">{apiError}</div>}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-gray-700 font-semibold mb-2 text-sm">
@@ -180,12 +189,12 @@ const Login = () => {
           </div>
         </div>
 
-        <Link 
+        {/* <Link 
           to="/signup" 
           className="mt-5 block w-full text-center py-3 px-6 border-2 border-savings-blue text-savings-blue rounded-xl font-semibold transition-all duration-300 hover:bg-savings-blue hover:text-white hover:-translate-y-0.5 hover:shadow-lg"
         >
           Create Account
-        </Link>
+        </Link> */}
       </div>
     </div>
   );

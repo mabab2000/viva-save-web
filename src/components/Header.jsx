@@ -45,9 +45,7 @@ const Header = ({ sidebarOpen, onToggleSidebar }) => {
         {/* Right Section - Notifications & Profile */}
         <div className="flex items-center space-x-4">
           {/* Quick Actions */}
-          <button className="bg-savings-blue text-white px-4 py-2 rounded-lg hover:bg-savings-purple transition-colors font-medium">
-            Add Transaction
-          </button>
+          
 
           {/* Notifications */}
           <div className="relative">

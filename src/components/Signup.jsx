@@ -1,19 +1,23 @@
 import { useState } from 'react';
+import { APP_BASE_URL } from '../config';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Signup = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    username: '',
     email: '',
+    phone_number: '',
     password: '',
-    confirmPassword: '',
+    confirm_password: '',
     agreedToTerms: false
   });
-
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
+  const [apiSuccess, setApiSuccess] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -31,38 +35,32 @@ const Signup = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
+    if (!formData.username.trim()) {
+      newErrors.username = 'Username is required';
     }
-
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    }
-
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
-
+    if (!formData.phone_number) {
+      newErrors.phone_number = 'Phone number is required';
+    } else if (!/^250\d{9}$/.test(formData.phone_number)) {
+      newErrors.phone_number = 'Phone number must be country code 250 followed by 9 digits (e.g., 250123456789)';
+    }
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters';
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      newErrors.password = 'Password must contain uppercase, lowercase, and number';
     }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+    if (!formData.confirm_password) {
+      newErrors.confirm_password = 'Please confirm your password';
+    } else if (formData.password !== formData.confirm_password) {
+      newErrors.confirm_password = 'Passwords do not match';
     }
-
     if (!formData.agreedToTerms) {
       newErrors.agreedToTerms = 'You must agree to the terms and conditions';
     }
-
     return newErrors;
   };
 
@@ -76,23 +74,38 @@ const Signup = () => {
     }
 
     setIsLoading(true);
-    
-    // Simulate API call
+    setApiError('');
+    setApiSuccess('');
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log('Signup submitted:', formData);
-      
-      // Redirect to dashboard on successful signup
-      navigate('/dashboard');
+      const response = await fetch('https://saving-api.mababa.app/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          phone_number: formData.phone_number,
+          password: formData.password,
+          confirm_password: formData.confirm_password
+        })
+      });
+      const data = await response.json();
+      if (response.ok && data.user_id) {
+        setApiSuccess(data.message || 'Signup successful!');
+        setTimeout(() => navigate('/login'), 2000);
+      } else if (response.status === 422 && data.detail && data.detail[0]) {
+        setApiError(data.detail[0].msg);
+      } else {
+        setApiError(data.detail || 'Signup failed. Please check your details.');
+      }
     } catch (error) {
-      console.error('Signup error:', error);
+      setApiError('Network error. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-savings-blue to-savings-purple p-5 relative overflow-hidden">
+  <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-savings-blue to-savings-purple p-5 relative overflow-x-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute inset-0" style={{
@@ -113,51 +126,29 @@ const Signup = () => {
 
       {/* Signup Card */}
       <div className="bg-white bg-opacity-95 backdrop-blur-xl rounded-3xl p-10 w-full max-w-lg shadow-2xl border border-white border-opacity-20 relative z-10">
+        {apiError && <div className="text-red-500 text-center mb-4 font-semibold">{apiError}</div>}
+        {apiSuccess && <div className="text-green-600 text-center mb-4 font-semibold">{apiSuccess}</div>}
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="firstName" className="block text-gray-700 font-semibold mb-2 text-sm">
-                First Name
-              </label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                className={`w-full px-4 py-3 border-2 rounded-xl text-base transition-all duration-300 bg-white ${
-                  errors.firstName 
-                    ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
-                    : 'border-gray-300 focus:border-savings-blue focus:ring-blue-100'
-                } focus:outline-none focus:ring-4`}
-                placeholder="First name"
-                autoComplete="given-name"
-              />
-              {errors.firstName && <span className="text-red-500 text-sm mt-1 block font-medium">{errors.firstName}</span>}
-            </div>
-
-            <div>
-              <label htmlFor="lastName" className="block text-gray-700 font-semibold mb-2 text-sm">
-                Last Name
-              </label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                className={`w-full px-4 py-3 border-2 rounded-xl text-base transition-all duration-300 bg-white ${
-                  errors.lastName 
-                    ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
-                    : 'border-gray-300 focus:border-savings-blue focus:ring-blue-100'
-                } focus:outline-none focus:ring-4`}
-                placeholder="Last name"
-                autoComplete="family-name"
-              />
-              {errors.lastName && <span className="text-red-500 text-sm mt-1 block font-medium">{errors.lastName}</span>}
-            </div>
+          <div>
+            <label htmlFor="username" className="block text-gray-700 font-semibold mb-2 text-sm">
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className={`w-full px-4 py-3 border-2 rounded-xl text-base transition-all duration-300 bg-white ${
+                errors.username 
+                  ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
+                  : 'border-gray-300 focus:border-savings-blue focus:ring-blue-100'
+              } focus:outline-none focus:ring-4`}
+              placeholder="Username"
+              autoComplete="username"
+            />
+            {errors.username && <span className="text-red-500 text-sm mt-1 block font-medium">{errors.username}</span>}
           </div>
-
           <div>
             <label htmlFor="email" className="block text-gray-700 font-semibold mb-2 text-sm">
               Email Address
@@ -178,47 +169,95 @@ const Signup = () => {
             />
             {errors.email && <span className="text-red-500 text-sm mt-1 block font-medium">{errors.email}</span>}
           </div>
-
+          <div>
+            <label htmlFor="phone_number" className="block text-gray-700 font-semibold mb-2 text-sm">
+              Phone Number
+            </label>
+            <input
+              type="text"
+              id="phone_number"
+              name="phone_number"
+              value={formData.phone_number}
+              onChange={handleChange}
+              className={`w-full px-4 py-3 border-2 rounded-xl text-base transition-all duration-300 bg-white ${
+                errors.phone_number 
+                  ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
+                  : 'border-gray-300 focus:border-savings-blue focus:ring-blue-100'
+              } focus:outline-none focus:ring-4`}
+              placeholder="250123456789"
+              autoComplete="tel"
+            />
+            {errors.phone_number && <span className="text-red-500 text-sm mt-1 block font-medium">{errors.phone_number}</span>}
+          </div>
           <div>
             <label htmlFor="password" className="block text-gray-700 font-semibold mb-2 text-sm">
               Password
             </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className={`w-full px-4 py-3 border-2 rounded-xl text-base transition-all duration-300 bg-white ${
-                errors.password 
-                  ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
-                  : 'border-gray-300 focus:border-savings-blue focus:ring-blue-100'
-              } focus:outline-none focus:ring-4`}
-              placeholder="Create a password"
-              autoComplete="new-password"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 border-2 rounded-xl text-base transition-all duration-300 bg-white ${
+                  errors.password 
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
+                    : 'border-gray-300 focus:border-savings-blue focus:ring-blue-100'
+                } focus:outline-none focus:ring-4 pr-12`}
+                placeholder="Create a password"
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                tabIndex={-1}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-savings-blue"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10a9.96 9.96 0 012.125-6.125M15 12a3 3 0 11-6 0 3 3 0 016 0zm6.125-6.125A9.96 9.96 0 0122 9c0 5.523-4.477 10-10 10a10.05 10.05 0 01-1.875-.175" /></svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm2.25 2.25l3.75 3.75M4.5 4.5l15 15" /></svg>
+                )}
+              </button>
+            </div>
             {errors.password && <span className="text-red-500 text-sm mt-1 block font-medium">{errors.password}</span>}
           </div>
-
           <div>
-            <label htmlFor="confirmPassword" className="block text-gray-700 font-semibold mb-2 text-sm">
+            <label htmlFor="confirm_password" className="block text-gray-700 font-semibold mb-2 text-sm">
               Confirm Password
             </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className={`w-full px-4 py-3 border-2 rounded-xl text-base transition-all duration-300 bg-white ${
-                errors.confirmPassword 
-                  ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
-                  : 'border-gray-300 focus:border-savings-blue focus:ring-blue-100'
-              } focus:outline-none focus:ring-4`}
-              placeholder="Confirm your password"
-              autoComplete="new-password"
-            />
-            {errors.confirmPassword && <span className="text-red-500 text-sm mt-1 block font-medium">{errors.confirmPassword}</span>}
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                id="confirm_password"
+                name="confirm_password"
+                value={formData.confirm_password}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 border-2 rounded-xl text-base transition-all duration-300 bg-white ${
+                  errors.confirm_password 
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
+                    : 'border-gray-300 focus:border-savings-blue focus:ring-blue-100'
+                } focus:outline-none focus:ring-4 pr-12`}
+                placeholder="Confirm your password"
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                tabIndex={-1}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-savings-blue"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              >
+                {showConfirmPassword ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10a9.96 9.96 0 012.125-6.125M15 12a3 3 0 11-6 0 3 3 0 016 0zm6.125-6.125A9.96 9.96 0 0122 9c0 5.523-4.477 10-10 10a10.05 10.05 0 01-1.875-.175" /></svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm2.25 2.25l3.75 3.75M4.5 4.5l15 15" /></svg>
+                )}
+              </button>
+            </div>
+            {errors.confirm_password && <span className="text-red-500 text-sm mt-1 block font-medium">{errors.confirm_password}</span>}
           </div>
 
           <div>

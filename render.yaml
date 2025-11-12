@@ -1,5 +1,5 @@
 services:
-  - type: static_site
+  - type: web
     name: savetracker-app
     buildCommand: npm ci && npm run build
     staticPublishPath: ./dist
