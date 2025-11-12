@@ -74,10 +74,13 @@ const Team = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Meet Our Team
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Our dedicated team of financial experts and technology innovators is committed to 
-            helping you achieve your savings goals with cutting-edge solutions.
-          </p>
+         <p className="text-xl text-gray-600 max-w-3xl mx-auto text-justify">
+  Our dedicated group is focused on helping members save and collaborate on 
+  financial solutions. By sharing insights, resources, and opportunities, 
+  we empower each other to find practical ways to achieve financial goals, 
+  ensuring that every member can contribute and benefit from our collective expertise.
+</p>
+
         </div>
 
         {/* Team Grid */}
