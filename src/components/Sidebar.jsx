@@ -65,7 +65,7 @@ const Sidebar = ({ isOpen, activeSection, onSectionChange }) => {
         </div>
         {isOpen && (
           <div className="ml-3">
-            <h2 className="text-xl font-bold text-gray-800">SaveTracker</h2>
+            <h2 className="text-xl font-bold text-gray-800">Alphonse</h2>
             <p className="text-xs text-gray-500">Savings Management</p>
           </div>
         )}
@@ -86,9 +86,9 @@ const Sidebar = ({ isOpen, activeSection, onSectionChange }) => {
       {isOpen && (
         <div className="absolute bottom-6 left-0 right-0 px-6">
           <div className="bg-gradient-to-r from-savings-blue to-savings-purple rounded-lg p-4 text-white">
-            <div className="text-sm font-medium">Total Savings</div>
-            <div className="text-2xl font-bold">$12,450</div>
-            <div className="text-xs opacity-90">+12% this month</div>
+            <div className="text-sm font-medium">Manage</div>
+            <div className="text-2xl font-bold">SAVING</div>
+            <div className="text-xs opacity-90">Transactions</div>
           </div>
         </div>
       )}

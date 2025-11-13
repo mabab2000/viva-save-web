@@ -47,6 +47,7 @@ const Team = () => {
           email: m.email,
           phone: m.phone_number,
           whatsapp: m.phone_number, // use phone for WhatsApp if no separate field
+          shares: m.shares, // include shares from API
           image: m.image_preview_link || '/logo.png',
           linkedin: '#',
           twitter: '#'
@@ -235,6 +236,11 @@ const Team = () => {
                   )}
                   {selectedMember.phone && (
                     <a href={`tel:${selectedMember.phone}`} className="text-gray-700 hover:text-blue-600">{selectedMember.phone}</a>
+                  )}
+                  {selectedMember.shares !== undefined && (
+                    <div className="text-gray-700">
+                      <span className="font-medium">Shares:</span> {selectedMember.shares}
+                    </div>
                   )}
                 </div>
               </div>

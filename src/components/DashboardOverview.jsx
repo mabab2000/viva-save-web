@@ -20,6 +20,8 @@ const DashboardOverview = () => {
     generated_at: null
   });
 
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
+
   const wsRef = useRef(null);
   const reconnectRef = useRef({ attempts: 0, timer: null });
   const mountedRef = useRef(true);
@@ -28,21 +30,47 @@ const DashboardOverview = () => {
 
   // Format numbers without currency symbol and without decimal places
   const formatNumber = (amount) => {
-    if (amount === null || amount === undefined) return '—';
+    if (amount === null || amount === undefined) return null; // Return null for loading
     // show as integer with thousands separators, drop any .00
     return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(amount);
   };
+
+  // Loading skeleton component for cards
+  const LoadingSkeleton = () => (
+    <div className="animate-pulse flex space-x-4">
+      <div className="flex-1 space-y-2 py-1">
+        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+        <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+      </div>
+    </div>
+  );
 
   const getProgressPercentage = (current, target) => {
     return Math.min((current / target) * 100, 100);
   };
 
-  // stats cards derived from liveStats with sensible fallbacks
+  // stats cards derived from liveStats with loading state
   const statsCards = [
-    { label: 'Total Savings', value: formatNumber(liveStats.total_savings ?? 12450), changeType: 'positive' },
-    { label: 'Total Loans', value: formatNumber(liveStats.total_loans ?? 1200), changeType: 'positive' },
-    { label: 'Total Penalties', value: formatNumber(liveStats.total_penalties ?? 0), changeType: 'neutral' },
-    { label: 'Members', value: (liveStats.user_count ?? 4).toString(), changeType: 'neutral' }
+    { 
+      label: 'Total Savings', 
+      value: isLoadingStats ? null : formatNumber(liveStats.total_savings), 
+      changeType: 'positive' 
+    },
+    { 
+      label: 'Total Loans', 
+      value: isLoadingStats ? null : formatNumber(liveStats.total_loans), 
+      changeType: 'positive' 
+    },
+    { 
+      label: 'Total Penalties', 
+      value: isLoadingStats ? null : formatNumber(liveStats.total_penalties), 
+      changeType: 'neutral' 
+    },
+    { 
+      label: 'Members', 
+      value: isLoadingStats ? null : liveStats.user_count?.toString(), 
+      changeType: 'neutral' 
+    }
   ];
 
   const WS_URL = 'wss://saving-api.mababa.app/ws/stats';
@@ -53,12 +81,14 @@ const DashboardOverview = () => {
 
       wsRef.current.onopen = () => {
         reconnectRef.current.attempts = 0;
+        setIsLoadingStats(true); // Still loading until we get data
       };
 
       wsRef.current.onmessage = (evt) => {
         try {
           const data = JSON.parse(evt.data);
           setLiveStats(prev => ({ ...prev, ...data }));
+          setIsLoadingStats(false); // Data received, stop loading
         } catch (err) {
           // ignore malformed messages
         }
@@ -108,9 +138,17 @@ const DashboardOverview = () => {
         {statsCards.map((stat, index) => (
           <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="flex-1">
                 <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                <p className="text-2xl font-bold text-gray-800 mt-1">{stat.value}</p>
+                {stat.value === null ? (
+                  <div className="mt-2">
+                    <div className="animate-pulse">
+                      <div className="h-8 bg-gray-200 rounded w-20"></div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-2xl font-bold text-gray-800 mt-1">{stat.value}</p>
+                )}
               </div>
               <div className={`px-2 py-1 rounded-full text-sm font-medium ${
                 stat.changeType === 'positive'
@@ -138,7 +176,17 @@ const DashboardOverview = () => {
           
           <div className="space-y-4">
             {/* Show the websocket-provided latest saving sum as the recent saving */}
-            {liveStats.sum_latest_saving ? (
+            {isLoadingStats ? (
+              <div className="border border-gray-100 rounded-lg p-4">
+                <div className="animate-pulse space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="h-4 bg-gray-200 rounded w-24"></div>
+                    <div className="h-6 bg-gray-200 rounded w-16"></div>
+                  </div>
+                  <div className="h-3 bg-gray-200 rounded w-32"></div>
+                </div>
+              </div>
+            ) : liveStats.sum_latest_saving ? (
               <div className="border border-gray-100 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-semibold text-gray-800">Latest saving</h3>
@@ -181,7 +229,17 @@ const DashboardOverview = () => {
           
           <div className="space-y-3">
             {/* If WS provides latest loan payments sum, show it prominently */}
-            {liveStats.sum_latest_loan_payments ? (
+            {isLoadingStats ? (
+              <div className="border border-gray-100 rounded-lg p-4">
+                <div className="animate-pulse space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="h-4 bg-gray-200 rounded w-32"></div>
+                    <div className="h-7 bg-gray-200 rounded w-20"></div>
+                  </div>
+                  <div className="h-3 bg-gray-200 rounded w-28"></div>
+                </div>
+              </div>
+            ) : liveStats.sum_latest_loan_payments ? (
               <div className="border border-gray-100 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-semibold text-gray-800">Latest loan payments</h3>

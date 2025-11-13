@@ -23,6 +23,12 @@ const Users = () => {
   const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
+  
+  // Add Saving modal states
+  const [showSavingModal, setShowSavingModal] = useState(false);
+  const [savingTargetUser, setSavingTargetUser] = useState(null);
+  const [savingAmount, setSavingAmount] = useState('');
+  const [savingLoading, setSavingLoading] = useState(false);
 
   useEffect(() => {
     const onClick = (e) => {
@@ -52,7 +58,9 @@ const Users = () => {
           name: u.username || u.name || '',
           email: u.email || '',
           phone: u.phone_number || u.phone || '',
-          status: 'Active'
+          status: 'Active',
+          // API may return total_saving as part of user object
+          total_saving: typeof u.total_saving !== 'undefined' ? u.total_saving : null
         }));
         setUsers(transformed);
       } catch (err) {
@@ -232,6 +240,51 @@ const Users = () => {
     }
   };
 
+  // Open saving modal
+  const handleAddSaving = (user) => {
+    setOpenDropdownId(null);
+    setSavingTargetUser(user);
+    setSavingAmount('');
+    setShowSavingModal(true);
+  };
+
+  // Add saving to user
+  const confirmAddSaving = async () => {
+    if (!savingTargetUser || !savingAmount) return;
+    
+    setSavingLoading(true);
+    try {
+      const payload = {
+        user_id: savingTargetUser.id,
+        amount: parseFloat(savingAmount)
+      };
+      
+      const res = await fetch('https://saving-api.mababa.app/api/saving', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`Failed to add saving: ${res.status} ${txt}`);
+      }
+      
+      const result = await res.json();
+      toast.addToast(`Saving of ${result.amount} added successfully for ${result.username}`, { type: 'success' });
+      
+      setShowSavingModal(false);
+      setSavingTargetUser(null);
+      setSavingAmount('');
+    } catch (err) {
+      console.error(err);
+      const msg = err.message || 'Failed to add saving';
+      toast.addToast(msg, { type: 'error' });
+    } finally {
+      setSavingLoading(false);
+    }
+  };
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-4">
@@ -274,6 +327,7 @@ const Users = () => {
           <thead>
             <tr>
               <th className="py-3 px-4 text-left border-b">Name</th>
+              <th className="py-3 px-4 text-left border-b">Total Saving</th>
               <th className="py-3 px-4 text-left border-b">Email</th>
               <th className="py-3 px-4 text-left border-b">Phone</th>
               <th className="py-3 px-4 text-left border-b">Status</th>
@@ -284,6 +338,7 @@ const Users = () => {
             {paginatedUsers.map(user => (
               <tr key={user.id} className="hover:bg-gray-50">
                 <td className="py-3 px-4 border-b">{user.name}</td>
+                <td className="py-3 px-4 border-b">{typeof user.total_saving === 'number' ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(user.total_saving) : '—'}</td>
                 <td className="py-3 px-4 border-b">{user.email}</td>
                 <td className="py-3 px-4 border-b">{user.phone}</td>
                 <td className="py-3 px-4 border-b">{user.status}</td>
@@ -301,6 +356,7 @@ const Users = () => {
                   {openDropdownId === user.id && (
                     <div className="absolute right-2 top-10 w-40 bg-white border rounded-md shadow-md z-20" onClick={(e) => e.stopPropagation()}>
                       <button onClick={() => openEditModal(user.id)} className="w-full text-left px-4 py-2 hover:bg-gray-50">Edit</button>
+                      <button onClick={() => handleAddSaving(user)} className="w-full text-left px-4 py-2 text-green-600 hover:bg-gray-50">Add Saving</button>
                       <button onClick={() => handleDelete(user.id)} className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">Delete</button>
                     </div>
                   )}
@@ -309,7 +365,7 @@ const Users = () => {
             ))}
             {paginatedUsers.length === 0 && (
               <tr>
-                <td colSpan={5} className="py-6 text-center text-gray-500">No users found</td>
+                <td colSpan={6} className="py-6 text-center text-gray-500">No users found</td>
               </tr>
             )}
           </tbody>
@@ -368,6 +424,52 @@ const Users = () => {
               <button onClick={confirmDelete} disabled={deleteLoading} className="px-4 py-2 bg-red-600 text-white rounded flex items-center space-x-2">
                 {deleteLoading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>}
                 <span>{deleteLoading ? 'Deleting...' : 'Delete'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Saving modal */}
+      {showSavingModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-md p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">Add Saving</h3>
+              <p className="text-sm text-gray-600 mt-2">
+                Add saving for: <span className="font-medium">{savingTargetUser?.name}</span>
+              </p>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+              <input
+                type="number"
+                placeholder="Enter saving amount"
+                value={savingAmount}
+                onChange={(e) => setSavingAmount(e.target.value)}
+                className="w-full border px-3 py-2 rounded-lg"
+                min="0"
+                step="0.01"
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <button 
+                onClick={() => { 
+                  setShowSavingModal(false); 
+                  setSavingTargetUser(null); 
+                  setSavingAmount(''); 
+                }} 
+                className="px-4 py-2 border rounded"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmAddSaving} 
+                disabled={savingLoading || !savingAmount}
+                className="px-4 py-2 bg-green-600 text-white rounded flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {savingLoading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>}
+                <span>{savingLoading ? 'Adding...' : 'Add Saving'}</span>
               </button>
             </div>
           </div>
