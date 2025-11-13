@@ -5,6 +5,7 @@ const Penalties = () => {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [penalties, setPenalties] = useState([]);
+  const [userNames, setUserNames] = useState({});
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const dropdownRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -45,16 +46,52 @@ const Penalties = () => {
         setTotalPaid(body.total_paid ?? null);
         setTotalUnpaid(body.total_unpaid ?? null);
         const list = Array.isArray(body.penalties) ? body.penalties : [];
-        setPenalties(list.map(p => ({
-          id: p.id,
-          user_id: p.user_id,
-          user: p.username || p.user || p.user_id,
-          reason: p.reason,
-          amount: p.amount,
-          status: p.status,
-          created_at: p.created_at,
-          updated_at: p.updated_at
-        })));
+
+        // try to fetch users to resolve user_id -> username
+        try {
+          const ures = await fetch('https://saving-api.mababa.app/api/users');
+          if (ures.ok) {
+            const usersBody = await ures.json();
+            const map = {};
+            (usersBody || []).forEach(u => {
+              map[u.id] = u.username || u.name || (u.email || '').split('@')[0];
+            });
+            setUserNames(map);
+            setPenalties(list.map(p => ({
+              id: p.id,
+              user_id: p.user_id,
+              user: p.username || map[p.user_id] || p.user || p.user_id,
+              reason: p.reason,
+              amount: p.amount,
+              status: p.status,
+              created_at: p.created_at,
+              updated_at: p.updated_at
+            })));
+          } else {
+            setPenalties(list.map(p => ({
+              id: p.id,
+              user_id: p.user_id,
+              user: p.username || p.user || p.user_id,
+              reason: p.reason,
+              amount: p.amount,
+              status: p.status,
+              created_at: p.created_at,
+              updated_at: p.updated_at
+            })));
+          }
+        } catch (uErr) {
+          // if users fetch fails, still set penalties using whatever username available
+          setPenalties(list.map(p => ({
+            id: p.id,
+            user_id: p.user_id,
+            user: p.username || p.user || p.user_id,
+            reason: p.reason,
+            amount: p.amount,
+            status: p.status,
+            created_at: p.created_at,
+            updated_at: p.updated_at
+          })));
+        }
       } catch (err) {
         if (err.name === 'AbortError') return;
         setError(err.message || 'Failed to load penalties');

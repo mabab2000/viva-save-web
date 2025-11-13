@@ -60,7 +60,9 @@ const Savings = () => {
   const openEditModal = (id) => {
     const s = savings.find(x => x.id === id);
     setEditId(id);
-    setFormData({ user: s.username || s.user, amount: s.amount, date: s.created_at || s.date, status: s.status || 'Active' });
+    // Allow editing amount and created_at (show datetime-local friendly value)
+    const toLocalInput = (iso) => iso ? new Date(iso).toISOString().slice(0,16) : '';
+    setFormData({ amount: s.amount, date: toLocalInput(s.created_at || s.date) });
     setIsModalOpen(true);
     setOpenDropdownId(null);
   };
@@ -72,10 +74,13 @@ const Savings = () => {
     if (isServerItem) {
       try {
         setSaveLoading(true);
+        const nowIso = new Date().toISOString();
+        const createdAtToSend = formData.date ? new Date(formData.date).toISOString() : nowIso;
+        // send amount and created_at (as provided or now)
         const res = await fetch(`https://saving-api.mababa.app/api/saving/${editId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: amountValue })
+          body: JSON.stringify({ amount: amountValue, created_at: createdAtToSend })
         });
         const body = await res.json().catch(() => null);
         if (!res.ok) {
@@ -86,7 +91,7 @@ const Savings = () => {
         if (body && body.id) {
           setSavings(prev => prev.map(s => s.id === editId ? { ...s, amount: body.amount ?? amountValue, username: body.username ?? s.username, phone_number: body.phone_number ?? s.phone_number, created_at: body.created_at ?? s.created_at } : s));
         } else {
-          setSavings(prev => prev.map(s => s.id === editId ? { ...s, amount: amountValue, created_at: formData.date || s.created_at } : s));
+          setSavings(prev => prev.map(s => s.id === editId ? { ...s, amount: amountValue, created_at: createdAtToSend } : s));
         }
         toast.addToast((body && body.message) ? body.message : 'Saving updated', { type: 'success' });
         setIsModalOpen(false);
@@ -103,7 +108,9 @@ const Savings = () => {
 
     // fallback/local save/add
     if (editId) {
-      setSavings(savings.map(s => s.id === editId ? { ...s, username: formData.user, amount: amountValue, created_at: formData.date } : s));
+      // Local fallback for editing: update amount and (optionally) created_at if provided
+      const updatedDate = formData.date ? new Date(formData.date).toISOString() : null;
+      setSavings(savings.map(s => s.id === editId ? { ...s, amount: amountValue, created_at: updatedDate || s.created_at } : s));
     } else {
       const newItem = {
         id: Date.now().toString(),
@@ -111,7 +118,7 @@ const Savings = () => {
         username: formData.user,
         phone_number: '',
         amount: amountValue,
-        created_at: formData.date || new Date().toISOString()
+        created_at: formData.date ? new Date(formData.date).toISOString() : new Date().toISOString()
       };
       setSavings([newItem, ...savings]);
     }
@@ -285,6 +292,10 @@ const Savings = () => {
             </div>
             <div className="grid grid-cols-1 gap-3">
               <input type="number" placeholder="Amount" value={formData.amount} onChange={e => setFormData({ ...formData, amount: e.target.value })} className="border px-3 py-2 rounded" />
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Date</label>
+                <input type="datetime-local" value={formData.date || ''} onChange={e => setFormData({ ...formData, date: e.target.value })} className="border px-3 py-2 rounded w-full" />
+              </div>
             </div>
             <div className="mt-4 flex justify-end space-x-2">
               <button onClick={() => { setIsModalOpen(false); setEditId(null); }} className="px-4 py-2 border rounded">Cancel</button>
