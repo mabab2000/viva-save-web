@@ -72,12 +72,13 @@ const Loans = () => {
         throw new Error(txt || `HTTP ${res.status}`);
       }
       const body = await res.json().catch(() => ({}));
-      toast?.addToast?.({ type: 'success', message: (body && body.message) ? body.message : 'Loan deleted' });
+      const successMsg = (body && body.message) ? body.message : 'Loan deleted';
+      toast.addToast(successMsg, { type: 'success' });
       setLoans(prev => prev.filter(l => l.id !== deleteId));
       setIsDeleteModalOpen(false);
       setDeleteId(null);
     } catch (err) {
-      toast?.addToast?.({ type: 'error', message: err.message || 'Failed to delete loan' });
+      toast.addToast(err.message || 'Failed to delete loan', { type: 'error' });
     } finally {
       setDeleteLoading(false);
     }
@@ -173,8 +174,8 @@ const Loans = () => {
                   {openDropdownId === l.id && (
                     <div className="absolute right-2 top-10 w-48 bg-white border rounded-md shadow-md z-20" onClick={(e) => e.stopPropagation()}>
                       <button onClick={() => openEditModal(l.id)} className="w-full text-left px-4 py-2 hover:bg-gray-50">Edit</button>
-                      {/* navigate to /dashboard/payment/:id (user requested 'payment/id' rather than 'id/payment') */}
-                      <button onClick={() => navigate(`/dashboard/payment/${l.id}`)} className="w-full text-left px-4 py-2 hover:bg-gray-50">View payments</button>
+                      {/* navigate to /dashboard/payment/:id with user query param */}
+                      <button onClick={() => navigate(`/dashboard/payment/${l.id}?user=${l.user_id || ''}`)} className="w-full text-left px-4 py-2 hover:bg-gray-50">View payments</button>
                       <button onClick={() => handleDelete(l.id)} className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">Delete</button>
                     </div>
                   )}

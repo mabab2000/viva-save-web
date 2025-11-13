@@ -54,10 +54,16 @@ const Sidebar = ({ isOpen, activeSection, onSectionChange }) => {
     }
   ];
 
+  // compute classes so we can vary behavior on small screens
+  const base = 'fixed left-0 top-0 h-full bg-white shadow-lg border-r border-gray-200 z-40 transition-all duration-300 transform';
+  const mobileTransform = isOpen ? 'translate-x-0' : '-translate-x-full';
+  const smWidth = isOpen ? 'sm:w-64' : 'sm:w-16';
+
   return (
-    <div className={`fixed left-0 top-0 h-full bg-white shadow-lg border-r border-gray-200 z-40 transition-all duration-300 ${
-      isOpen ? 'w-64' : 'w-16'
-    }`}>
+    <>
+      {/* backdrop for small screens when sidebar is open */}
+      <div className={`${isOpen ? 'fixed' : 'hidden'} inset-0 bg-black bg-opacity-40 z-30 sm:hidden`} onClick={() => onSectionChange && onSectionChange('')}></div>
+      <div className={`${base} ${mobileTransform} w-64 sm:translate-x-0 ${smWidth}`}> 
       {/* Logo Section */}
       <div className="flex items-center p-4 border-b border-gray-200">
         <div className="w-10 h-10 rounded-lg overflow-hidden bg-white flex items-center justify-center">
@@ -82,17 +88,8 @@ const Sidebar = ({ isOpen, activeSection, onSectionChange }) => {
         </div>
       </nav>
 
-      {/* Quick Stats (when sidebar is open) */}
-      {isOpen && (
-        <div className="absolute bottom-6 left-0 right-0 px-6">
-          <div className="bg-gradient-to-r from-savings-blue to-savings-purple rounded-lg p-4 text-white">
-            <div className="text-sm font-medium">Manage</div>
-            <div className="text-2xl font-bold">SAVING</div>
-            <div className="text-xs opacity-90">Transactions</div>
-          </div>
-        </div>
-      )}
     </div>
+    </>
   );
 };
 

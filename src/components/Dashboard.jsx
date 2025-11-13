@@ -26,8 +26,9 @@ const Dashboard = () => {
       <Sidebar 
         isOpen={sidebarOpen} 
         activeSection={activeSection}
+        onSectionChange={() => setSidebarOpen(false)}
       />
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-16'}`}>
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${sidebarOpen ? 'ml-0 sm:ml-64' : 'ml-0 sm:ml-16'}`}>
         <Header 
           sidebarOpen={sidebarOpen}
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}

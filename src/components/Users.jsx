@@ -29,6 +29,19 @@ const Users = () => {
   const [savingTargetUser, setSavingTargetUser] = useState(null);
   const [savingAmount, setSavingAmount] = useState('');
   const [savingLoading, setSavingLoading] = useState(false);
+  // Add Penalty modal states
+  const [showPenaltyModal, setShowPenaltyModal] = useState(false);
+  const [penaltyTargetUser, setPenaltyTargetUser] = useState(null);
+  const [penaltyReason, setPenaltyReason] = useState('');
+  const [penaltyAmount, setPenaltyAmount] = useState('');
+  const [penaltyLoading, setPenaltyLoading] = useState(false);
+  // Add Loan modal states
+  const [showLoanModal, setShowLoanModal] = useState(false);
+  const [loanTargetUser, setLoanTargetUser] = useState(null);
+  const [loanAmount, setLoanAmount] = useState('');
+  const [loanIssuedDate, setLoanIssuedDate] = useState('');
+  const [loanDeadline, setLoanDeadline] = useState('');
+  const [loanLoading, setLoanLoading] = useState(false);
 
   useEffect(() => {
     const onClick = (e) => {
@@ -248,6 +261,22 @@ const Users = () => {
     setShowSavingModal(true);
   };
 
+  // Open loan modal
+  const handleAddLoan = (user) => {
+    setOpenDropdownId(null);
+    setLoanTargetUser(user);
+    setLoanAmount('');
+    // default issued_date to now and deadline to 6 months from now
+    const now = new Date();
+    const inSixMonths = new Date(now);
+    inSixMonths.setMonth(now.getMonth() + 6);
+    // format for datetime-local input (YYYY-MM-DDTHH:MM)
+    const toLocalInput = (d) => d.toISOString().slice(0,16);
+    setLoanIssuedDate(toLocalInput(now));
+    setLoanDeadline(toLocalInput(inSixMonths));
+    setShowLoanModal(true);
+  };
+
   // Add saving to user
   const confirmAddSaving = async () => {
     if (!savingTargetUser || !savingAmount) return;
@@ -282,6 +311,47 @@ const Users = () => {
       toast.addToast(msg, { type: 'error' });
     } finally {
       setSavingLoading(false);
+    }
+  };
+
+  // Add loan to user
+  const confirmAddLoan = async () => {
+    if (!loanTargetUser || !loanAmount || !loanIssuedDate || !loanDeadline) return;
+    setLoanLoading(true);
+    try {
+      const payload = {
+        user_id: loanTargetUser.id,
+        amount: parseFloat(loanAmount),
+        issued_date: new Date(loanIssuedDate).toISOString(),
+        deadline: new Date(loanDeadline).toISOString()
+      };
+
+      const res = await fetch('https://saving-api.mababa.app/api/loan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`Failed to add loan: ${res.status} ${txt}`);
+      }
+
+      const result = await res.json();
+      toast.addToast(`Loan of ${new Intl.NumberFormat('en-US', { maximumFractionDigits:0 }).format(result.amount)} added for ${result.username}`, { type: 'success' });
+
+      // close modal
+      setShowLoanModal(false);
+      setLoanTargetUser(null);
+      setLoanAmount('');
+      setLoanIssuedDate('');
+      setLoanDeadline('');
+    } catch (err) {
+      console.error(err);
+      const msg = err.message || 'Failed to add loan';
+      toast.addToast(msg, { type: 'error' });
+    } finally {
+      setLoanLoading(false);
     }
   };
 
@@ -354,8 +424,10 @@ const Users = () => {
                   </button>
 
                   {openDropdownId === user.id && (
-                    <div className="absolute right-2 top-10 w-40 bg-white border rounded-md shadow-md z-20" onClick={(e) => e.stopPropagation()}>
+                    <div className="absolute right-2 top-10 w-48 bg-white border rounded-md shadow-md z-20" onClick={(e) => e.stopPropagation()}>
                       <button onClick={() => openEditModal(user.id)} className="w-full text-left px-4 py-2 hover:bg-gray-50">Edit</button>
+                      <button onClick={() => handleAddLoan(user)} className="w-full text-left px-4 py-2 text-yellow-700 hover:bg-gray-50">Add Loan</button>
+                      <button onClick={() => { setOpenDropdownId(null); setPenaltyTargetUser(user); setPenaltyReason(''); setPenaltyAmount(''); setShowPenaltyModal(true); }} className="w-full text-left px-4 py-2 text-purple-600 hover:bg-gray-50">Add Penalty</button>
                       <button onClick={() => handleAddSaving(user)} className="w-full text-left px-4 py-2 text-green-600 hover:bg-gray-50">Add Saving</button>
                       <button onClick={() => handleDelete(user.id)} className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">Delete</button>
                     </div>
@@ -470,6 +542,123 @@ const Users = () => {
               >
                 {savingLoading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>}
                 <span>{savingLoading ? 'Adding...' : 'Add Saving'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Add Penalty modal */}
+      {showPenaltyModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-md p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">Add Penalty</h3>
+              <p className="text-sm text-gray-600 mt-2">Add penalty for: <span className="font-medium">{penaltyTargetUser?.name}</span></p>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Reason</label>
+              <input
+                type="text"
+                placeholder="Reason for penalty"
+                value={penaltyReason}
+                onChange={(e) => setPenaltyReason(e.target.value)}
+                className="w-full border px-3 py-2 rounded-lg"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+              <input
+                type="number"
+                placeholder="Enter amount"
+                value={penaltyAmount}
+                onChange={(e) => setPenaltyAmount(e.target.value)}
+                className="w-full border px-3 py-2 rounded-lg"
+                min="0"
+                step="0.01"
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => { setShowPenaltyModal(false); setPenaltyTargetUser(null); setPenaltyReason(''); setPenaltyAmount(''); }}
+                className="px-4 py-2 border rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  // confirm add penalty
+                  if (!penaltyTargetUser) return;
+                  const amt = Number(penaltyAmount);
+                  if (!penaltyReason || !amt || amt <= 0) {
+                    toast.addToast('Please provide a valid reason and amount', { type: 'error' });
+                    return;
+                  }
+                  setPenaltyLoading(true);
+                  try {
+                    const payload = { user_id: penaltyTargetUser.id, reason: penaltyReason, amount: amt, status: 'unpaid' };
+                    const res = await fetch('https://saving-api.mababa.app/api/penalty', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(payload)
+                    });
+                    if (!res.ok) {
+                      const txt = await res.text();
+                      throw new Error(`Failed to add penalty: ${res.status} ${txt}`);
+                    }
+                    const body = await res.json().catch(() => ({}));
+                    const msg = (body && body.message) ? body.message : 'Penalty added';
+                    toast.addToast(msg, { type: 'success' });
+                    // close modal
+                    setShowPenaltyModal(false);
+                    setPenaltyTargetUser(null);
+                    setPenaltyReason('');
+                    setPenaltyAmount('');
+                  } catch (err) {
+                    console.error(err);
+                    toast.addToast(err.message || 'Failed to add penalty', { type: 'error' });
+                  } finally {
+                    setPenaltyLoading(false);
+                  }
+                }}
+                disabled={penaltyLoading}
+                className="px-4 py-2 bg-purple-600 text-white rounded flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {penaltyLoading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>}
+                <span>{penaltyLoading ? 'Adding...' : 'Add Penalty'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Loan modal */}
+      {showLoanModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-md p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">Add Loan</h3>
+              <p className="text-sm text-gray-600 mt-2">Add loan for: <span className="font-medium">{loanTargetUser?.name}</span></p>
+            </div>
+            <div className="grid grid-cols-1 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                <input type="number" value={loanAmount} onChange={e => setLoanAmount(e.target.value)} className="w-full border px-3 py-2 rounded" min="0" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Issued date</label>
+                <input type="datetime-local" value={loanIssuedDate} onChange={e => setLoanIssuedDate(e.target.value)} className="w-full border px-3 py-2 rounded" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Deadline</label>
+                <input type="datetime-local" value={loanDeadline} onChange={e => setLoanDeadline(e.target.value)} className="w-full border px-3 py-2 rounded" />
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end space-x-2">
+              <button onClick={() => { setShowLoanModal(false); setLoanTargetUser(null); }} className="px-4 py-2 border rounded">Cancel</button>
+              <button onClick={confirmAddLoan} disabled={loanLoading || !loanAmount} className="px-4 py-2 bg-yellow-600 text-white rounded flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                {loanLoading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>}
+                <span>{loanLoading ? 'Adding...' : 'Add Loan'}</span>
               </button>
             </div>
           </div>

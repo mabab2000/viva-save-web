@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from './Toast';
 
 const mockPayments = [
@@ -17,38 +17,79 @@ export default function Payment() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [newAmount, setNewAmount] = useState('');
+  const [adding, setAdding] = useState(false);
+
   const [totalAmount, setTotalAmount] = useState(null);
   const [totalCount, setTotalCount] = useState(null);
+
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const userIdFromQuery = query.get('user') || null;
+
+  // reusable loader so we can refresh after creating a payment
+  const loadPayments = async (signal) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const opts = signal ? { signal } : {};
+      const res = await fetch(`https://saving-api.mababa.app/api/loan-payments/${id}`, opts);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const body = await res.json();
+      setTotalAmount(body.total_amount ?? null);
+      setTotalCount(body.total_payments ?? null);
+      const list = Array.isArray(body.payments) ? body.payments : [];
+      setPayments(list.map(p => ({ id: p.id, date: p.created_at || p.updated_at || p.timestamp, amount: p.amount })));
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      setError(err.message || 'Failed to load payments');
+      setPayments(mockPayments);
+      toast.addToast('Using fallback payment data (could not fetch from server).', { type: 'info' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     let aborted = false;
     const controller = new AbortController();
-    const fetchPayments = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        // new endpoint per request: /api/loan-payments/{loanId}
-        const res = await fetch(`https://saving-api.mababa.app/api/loan-payments/${id}`, { signal: controller.signal });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const body = await res.json();
-        if (aborted) return;
-        setTotalAmount(body.total_amount ?? null);
-        setTotalCount(body.total_payments ?? null);
-        const list = Array.isArray(body.payments) ? body.payments : [];
-        setPayments(list.map(p => ({ id: p.id, date: p.created_at || p.updated_at || p.timestamp, amount: p.amount })));
-      } catch (err) {
-        if (err.name === 'AbortError') return;
-        // fallback to mock data and show a non-blocking toast
-        setError(err.message || 'Failed to load payments');
-        setPayments(mockPayments);
-        toast?.addToast?.({ type: 'info', message: 'Using fallback payment data (could not fetch from server).' });
-      } finally {
-        if (!aborted) setLoading(false);
-      }
-    };
-    fetchPayments();
+    loadPayments(controller.signal).catch(() => {});
     return () => { aborted = true; controller.abort(); };
-  }, [id, toast]);
+  }, [id]);
+
+  const handleAddPayment = async () => {
+    if (!userIdFromQuery) {
+      toast.addToast('Missing user id; cannot add payment', { type: 'error' });
+      return;
+    }
+    const amt = Number(newAmount);
+    if (!amt || amt <= 0) {
+      toast.addToast('Enter a valid amount', { type: 'error' });
+      return;
+    }
+    setAdding(true);
+    try {
+      const res = await fetch('https://saving-api.mababa.app/api/loan-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userIdFromQuery, loan_id: id, amount: amt })
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(txt || `HTTP ${res.status}`);
+      }
+      const body = await res.json().catch(() => ({}));
+      const msg = body && body.message ? body.message : 'Payment added';
+      toast.addToast(msg, { type: 'success' });
+      setNewAmount('');
+      // refresh list & totals
+      await loadPayments();
+    } catch (err) {
+      toast.addToast(err.message || 'Failed to add payment', { type: 'error' });
+    } finally {
+      setAdding(false);
+    }
+  };
 
   const formatNumber = (n) => n == null ? '' : Number(n).toLocaleString();
 
@@ -61,6 +102,10 @@ export default function Payment() {
         </div>
         <div className="flex items-center space-x-2">
           <button onClick={() => navigate(-1)} className="px-3 py-2 border rounded">Back</button>
+          <div className="flex items-center space-x-2">
+            <input type="number" placeholder="Amount" value={newAmount} onChange={e => setNewAmount(e.target.value)} className="border px-3 py-2 rounded" />
+            <button onClick={handleAddPayment} disabled={adding} className="px-3 py-2 bg-green-600 text-white rounded disabled:opacity-50">{adding ? 'Adding...' : 'Add Payment'}</button>
+          </div>
         </div>
       </div>
 
