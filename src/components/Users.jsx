@@ -9,7 +9,7 @@ const mockUsers = [
 const Users = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -373,7 +373,7 @@ const Users = () => {
             onChange={e => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
             className="border px-2 py-2 rounded"
           >
-            <option value={5}>5</option>
+            
             <option value={10}>10</option>
             <option value={25}>25</option>
             <option value={50}>50</option>

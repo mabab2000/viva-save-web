@@ -55,7 +55,7 @@ const Sidebar = ({ isOpen, activeSection, onSectionChange }) => {
   ];
 
   // compute classes so we can vary behavior on small screens
-  const base = 'fixed left-0 top-0 h-full bg-white shadow-lg border-r border-gray-200 z-40 transition-all duration-300 transform';
+  const base = 'fixed left-0 top-0 h-full bg-white shadow-lg border-r border-blue-600 z-40 transition-all duration-300 transform';
   const mobileTransform = isOpen ? 'translate-x-0' : '-translate-x-full';
   const smWidth = isOpen ? 'sm:w-64' : 'sm:w-16';
 
@@ -65,8 +65,8 @@ const Sidebar = ({ isOpen, activeSection, onSectionChange }) => {
       <div className={`${isOpen ? 'fixed' : 'hidden'} inset-0 bg-black bg-opacity-40 z-30 sm:hidden`} onClick={() => onSectionChange && onSectionChange('')}></div>
       <div className={`${base} ${mobileTransform} w-64 sm:translate-x-0 ${smWidth}`}> 
       {/* Logo Section */}
-      <div className="flex items-center p-4 border-b border-gray-200">
-        <div className="w-10 h-10 rounded-lg overflow-hidden bg-white flex items-center justify-center">
+      <div className="flex items-center p-4 border-b border-blue-600">
+        <div className="w-10 h-12 rounded-lg overflow-hidden bg-blue-600 flex items-center justify-center">
           <img src="/logo.png" alt="SaveTracker" className="w-full h-full object-cover" onError={(e)=>{e.target.style.display='none'}} />
         </div>
         {isOpen && (

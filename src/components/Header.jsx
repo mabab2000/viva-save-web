@@ -13,7 +13,7 @@ const Header = ({ sidebarOpen, onToggleSidebar }) => {
   ];
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+    <header className="bg-white shadow-sm border-b border-blue-600 py-4">
       <div className="flex items-center justify-between">
         {/* Left Section - Toggle & Search */}
         <div className="flex items-center space-x-4">

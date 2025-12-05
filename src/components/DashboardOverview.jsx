@@ -136,7 +136,7 @@ const DashboardOverview = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {statsCards.map((stat, index) => (
-          <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div key={index} className="bg-white rounded-xl shadow-sm border border-b border-blue-600 p-6">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-600">{stat.label}</p>
@@ -166,7 +166,7 @@ const DashboardOverview = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Savings Goals */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-blue-600 p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-800">Recent saving</h2>
             <button className="text-savings-blue hover:text-savings-purple font-medium text-sm">
@@ -219,7 +219,7 @@ const DashboardOverview = () => {
         </div>
 
         {/* Recent Transactions */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-blue-600 p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-800">Recent Monthly loan</h2>
             <button className="text-savings-blue hover:text-savings-purple font-medium text-sm">
@@ -230,7 +230,7 @@ const DashboardOverview = () => {
           <div className="space-y-3">
             {/* If WS provides latest loan payments sum, show it prominently */}
             {isLoadingStats ? (
-              <div className="border border-gray-100 rounded-lg p-4">
+              <div className="border border-blue-600 rounded-lg p-4">
                 <div className="animate-pulse space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="h-4 bg-gray-200 rounded w-32"></div>

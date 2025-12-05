@@ -81,120 +81,104 @@ const Login = () => {
   };
 
   return (
-  <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-savings-blue to-savings-purple p-5 relative overflow-x-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><pattern id='grid' width='10' height='10' patternUnits='userSpaceOnUse'><path d='M 10 0 L 0 0 0 10' fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1'/></pattern></defs><rect width='100' height='100' fill='url(%23grid)'/></svg>")`
-        }}></div>
-      </div>
-
-      {/* Header Section */}
-      <div className="text-center mb-8 relative z-10">
-        
-       
-        <p className="text-white text-opacity-90 text-lg font-light">Sign in to Manage all savings (Only Admin) </p>
-      </div>
-
-      {/* Login Card */}
-      <div className="bg-white bg-opacity-95 backdrop-blur-xl rounded-3xl p-10 w-full max-w-md shadow-2xl border border-white border-opacity-20 relative z-10">
-        {apiError && <div className="text-red-500 text-center mb-4 font-semibold">{apiError}</div>}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-gray-700 font-semibold mb-2 text-sm">
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={`w-full px-4 py-3 border-2 rounded-xl text-base transition-all duration-300 bg-white ${
-                errors.email 
-                  ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
-                  : 'border-gray-300 focus:border-savings-blue focus:ring-blue-100'
-              } focus:outline-none focus:ring-4`}
-              placeholder="Enter your email"
-              autoComplete="email"
-            />
-            {errors.email && <span className="text-red-500 text-sm mt-1 block font-medium">{errors.email}</span>}
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
+      <div className="w-full max-w-md">
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <div className="mx-auto mb-6 w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
           </div>
+          {/* <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome back</h1> */}
+          <p className="text-gray-600">Sign in to your admin account</p>
+        </div>
 
-          <div>
-            <label htmlFor="password" className="block text-gray-700 font-semibold mb-2 text-sm">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className={`w-full px-4 py-3 border-2 rounded-xl text-base transition-all duration-300 bg-white ${
-                errors.password 
-                  ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
-                  : 'border-gray-300 focus:border-savings-blue focus:ring-blue-100'
-              } focus:outline-none focus:ring-4`}
-              placeholder="Enter your password"
-              autoComplete="current-password"
-            />
-            {errors.password && <span className="text-red-500 text-sm mt-1 block font-medium">{errors.password}</span>}
-          </div>
+        {/* Login Card */}
+        <div className="bg-white rounded-3xl shadow-sm border border-blue-600 p-8">
+          {apiError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl">
+              <p className="text-red-600 text-sm font-medium">{apiError}</p>
+            </div>
+          )}
+          
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 border rounded-xl text-sm transition-colors ${
+                  errors.email 
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                    : 'border-blue-300 focus:border-blue-500 focus:ring-blue-500'
+                } focus:outline-none focus:ring-2 focus:ring-opacity-20`}
+                placeholder="Enter your email address"
+                autoComplete="email"
+              />
+              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+            </div>
 
-          <div className="flex items-center justify-between">
-            <label className="flex items-center cursor-pointer text-gray-700">
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 border rounded-xl text-sm transition-colors ${
+                  errors.password 
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                    : 'border-blue-300 focus:border-blue-500 focus:ring-blue-500'
+                } focus:outline-none focus:ring-2 focus:ring-opacity-20`}
+                placeholder="Enter your password"
+                autoComplete="current-password"
+              />
+              {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
+            </div>
+
+            <div className="flex items-center">
               <input
                 type="checkbox"
+                id="rememberMe"
                 name="rememberMe"
                 checked={formData.rememberMe}
                 onChange={handleChange}
-                className="w-5 h-5 border-2 border-gray-300 rounded mr-3 accent-savings-blue focus:ring-2 focus:ring-savings-blue focus:ring-offset-2"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-blue-300 rounded"
               />
-              Remember me
-            </label>
-            <Link to="/forgot-password" className="text-savings-blue hover:text-savings-purple font-medium text-sm transition-colors">
-              Forgot password?
-            </Link>
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={`w-full bg-gradient-to-r from-savings-blue to-savings-purple text-white py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center space-x-3 ${
-              isLoading 
-                ? 'opacity-70 cursor-not-allowed' 
-                : 'hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-300'
-            }`}
-          >
-            {isLoading ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white border-opacity-30 border-t-white rounded-full animate-spin"></div>
-                <span>Signing in...</span>
-              </>
-            ) : (
-              'Sign In'
-            )}
-          </button>
-        </form>
-
-        <div className="mt-8 text-center">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
+                Remember me
+              </label>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-5 bg-white text-gray-500">Don't have an account?</span>
-            </div>
-          </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`w-full bg-blue-600 text-white py-3 px-4 rounded-xl font-medium text-sm transition-colors ${
+                isLoading 
+                  ? 'opacity-50 cursor-not-allowed' 
+                  : 'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20'
+              }`}
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Signing in...
+                </div>
+              ) : (
+                'Sign In'
+              )}
+            </button>
+          </form>
         </div>
-
-        {/* <Link 
-          to="/signup" 
-          className="mt-5 block w-full text-center py-3 px-6 border-2 border-savings-blue text-savings-blue rounded-xl font-semibold transition-all duration-300 hover:bg-savings-blue hover:text-white hover:-translate-y-0.5 hover:shadow-lg"
-        >
-          Create Account
-        </Link> */}
       </div>
     </div>
   );
