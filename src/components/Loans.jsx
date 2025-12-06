@@ -174,8 +174,9 @@ const Loans = () => {
                   {openDropdownId === l.id && (
                     <div className="absolute right-2 top-10 w-48 bg-white border rounded-md shadow-md z-20" onClick={(e) => e.stopPropagation()}>
                       <button onClick={() => openEditModal(l.id)} className="w-full text-left px-4 py-2 hover:bg-gray-50">Edit</button>
+                      <button onClick={() => navigate(`/dashboard/payment-schedule/${l.id}`)} className="w-full text-left px-4 py-2 text-blue-600 hover:bg-gray-50">Payment Schedule</button>
                       {/* navigate to /dashboard/payment/:id with user query param */}
-                      <button onClick={() => navigate(`/dashboard/payment/${l.id}?user=${l.user_id || ''}`)} className="w-full text-left px-4 py-2 hover:bg-gray-50">View payments</button>
+                      <button onClick={() => navigate(`/dashboard/payment/${l.id}?user=${l.user_id || ''}`)} className="w-full text-left px-4 py-2 hover:bg-gray-50">View Payments</button>
                       <button onClick={() => handleDelete(l.id)} className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">Delete</button>
                     </div>
                   )}

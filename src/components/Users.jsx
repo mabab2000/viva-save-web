@@ -382,12 +382,6 @@ const Users = () => {
         </div>
       </div>
 
-      {loading && (
-        <div className="mb-4 text-sm text-gray-600 flex items-center space-x-2">
-          <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
-          <div>Loading users...</div>
-        </div>
-      )}
       {error && (
         <div className="mb-4 text-sm text-red-600">Error loading users: {error}</div>
       )}
@@ -405,37 +399,49 @@ const Users = () => {
             </tr>
           </thead>
           <tbody>
-            {paginatedUsers.map(user => (
-              <tr key={user.id} className="hover:bg-gray-50">
-                <td className="py-3 px-4 border-b">{user.name}</td>
-                <td className="py-3 px-4 border-b">{typeof user.total_saving === 'number' ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(user.total_saving) : '—'}</td>
-                <td className="py-3 px-4 border-b">{user.email}</td>
-                <td className="py-3 px-4 border-b">{user.phone}</td>
-                <td className="py-3 px-4 border-b">{user.status}</td>
-                <td className="py-3 px-4 border-b relative" ref={openDropdownId === user.id ? dropdownRef : null}>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === user.id ? null : user.id); }}
-                    className="p-2 rounded hover:bg-gray-100"
-                    aria-label="Open menu"
-                  >
-                    <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                  </button>
-
-                  {openDropdownId === user.id && (
-                    <div className="absolute right-2 top-10 w-48 bg-white border rounded-md shadow-md z-20" onClick={(e) => e.stopPropagation()}>
-                      <button onClick={() => openEditModal(user.id)} className="w-full text-left px-4 py-2 hover:bg-gray-50">Edit</button>
-                      <button onClick={() => handleAddLoan(user)} className="w-full text-left px-4 py-2 text-yellow-700 hover:bg-gray-50">Add Loan</button>
-                      <button onClick={() => { setOpenDropdownId(null); setPenaltyTargetUser(user); setPenaltyReason(''); setPenaltyAmount(''); setShowPenaltyModal(true); }} className="w-full text-left px-4 py-2 text-purple-600 hover:bg-gray-50">Add Penalty</button>
-                      <button onClick={() => handleAddSaving(user)} className="w-full text-left px-4 py-2 text-green-600 hover:bg-gray-50">Add Saving</button>
-                      <button onClick={() => handleDelete(user.id)} className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">Delete</button>
-                    </div>
-                  )}
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="py-6 text-center text-gray-600">
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
+                    <div>Loading users...</div>
+                  </div>
                 </td>
               </tr>
-            ))}
-            {paginatedUsers.length === 0 && (
+            ) : (
+              paginatedUsers.map(user => (
+                <tr key={user.id} className="hover:bg-gray-50">
+                  <td className="py-3 px-4 border-b">{user.name}</td>
+                  <td className="py-3 px-4 border-b">{typeof user.total_saving === 'number' ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(user.total_saving) : '—'}</td>
+                  <td className="py-3 px-4 border-b">{user.email}</td>
+                  <td className="py-3 px-4 border-b">{user.phone}</td>
+                  <td className="py-3 px-4 border-b">{user.status}</td>
+                  <td className="py-3 px-4 border-b relative" ref={openDropdownId === user.id ? dropdownRef : null}>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === user.id ? null : user.id); }}
+                      className="p-2 rounded hover:bg-gray-100"
+                      aria-label="Open menu"
+                    >
+                      <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </button>
+
+                    {openDropdownId === user.id && (
+                      <div className="absolute right-2 top-10 w-48 bg-white border rounded-md shadow-md z-20" onClick={(e) => e.stopPropagation()}>
+                        <button onClick={() => openEditModal(user.id)} className="w-full text-left px-4 py-2 hover:bg-gray-50">Edit</button>
+                        <button onClick={() => handleAddLoan(user)} className="w-full text-left px-4 py-2 text-yellow-700 hover:bg-gray-50">Add Loan</button>
+                        <button onClick={() => { setOpenDropdownId(null); setPenaltyTargetUser(user); setPenaltyReason(''); setPenaltyAmount(''); setShowPenaltyModal(true); }} className="w-full text-left px-4 py-2 text-purple-600 hover:bg-gray-50">Add Penalty</button>
+                        <button onClick={() => handleAddSaving(user)} className="w-full text-left px-4 py-2 text-green-600 hover:bg-gray-50">Add Saving</button>
+                        <button onClick={() => handleDelete(user.id)} className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">Delete</button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
+
+            {!loading && paginatedUsers.length === 0 && (
               <tr>
                 <td colSpan={6} className="py-6 text-center text-gray-500">No users found</td>
               </tr>
