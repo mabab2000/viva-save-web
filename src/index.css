@@ -11,3 +11,11 @@
     font-family: 'Inter', system-ui, sans-serif;
   }
 }
+
+@layer components {
+  /* Very small padding for table cells used across the app */
+  .table-very-small th,
+  .table-very-small td {
+    padding: 0.25rem !important; /* 4px */
+  }
+}

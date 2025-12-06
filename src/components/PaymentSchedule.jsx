@@ -271,9 +271,11 @@ const PaymentSchedule = () => {
         try {
           const statusRes = await fetch(`https://saving-api.mababa.app/api/loan/${loanId}/status`);
           let totalPaid = 0;
+          let fetchedStatus = null;
           
           if (statusRes.ok) {
             const statusData = await statusRes.json();
+            fetchedStatus = statusData;
             setLoanStatus(statusData);
             totalPaid = statusData.total_amount_paid || 0;
           } else {
@@ -287,8 +289,16 @@ const PaymentSchedule = () => {
             foundLoan.deadline,
             totalPaid
           );
-          
-          setSchedule(calculatedSchedule);
+
+          // If the loan is closed, mark any non-paid entries as Closed
+          if (fetchedStatus && fetchedStatus.status === 'closed') {
+            const finalSchedule = calculatedSchedule.map((entry) => (
+              entry.status === 'Paid' ? entry : { ...entry, status: 'Closed' }
+            ));
+            setSchedule(finalSchedule);
+          } else {
+            setSchedule(calculatedSchedule);
+          }
         } catch (statusError) {
           console.warn('Error fetching loan status:', statusError);
           // Calculate schedule without payment status if status fetch fails
@@ -421,7 +431,7 @@ const PaymentSchedule = () => {
         </div>
         
         <div className="overflow-x-auto">
-          <table className="min-w-full">
+          <table className="min-w-full table-very-small">
             <thead>
               <tr className="bg-gray-50">
                 <th className="py-2 px-3 text-left border-b font-medium text-sm">Month</th>
@@ -438,7 +448,7 @@ const PaymentSchedule = () => {
               {schedule.map((payment, index) => (
                 <tr key={payment.month} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                   <td className="py-2 px-3 border-b font-medium text-sm">{payment.month}</td>
-                  <td className="py-2 px-3 border-b text-sm">{payment.paymentDate}</td>
+                  <td className={payment.status === 'Closed' ? 'py-2 px-3 border-b text-sm text-red-600' : 'py-2 px-3 border-b text-sm'}>{payment.paymentDate}</td>
                   <td className="py-2 px-3 border-b text-right font-medium text-sm">
                     {formatCurrency(payment.principal)}
                   </td>
@@ -449,7 +459,7 @@ const PaymentSchedule = () => {
                     {formatCurrency(payment.totalPayment)}
                   </td>
                   <td className="py-2 px-3 border-b text-right font-bold text-sm" style={{
-                    color: payment.status === 'Paid' ? '#059669' : payment.status === 'Progress' ? '#2563eb' : '#6b7280'
+                    color: payment.status === 'Paid' ? '#059669' : payment.status === 'Progress' ? '#2563eb' : payment.status === 'Closed' ? '#dc2626' : '#6b7280'
                   }}>
                     {formatCurrency(payment.paidAmount)}
                   </td>
@@ -462,6 +472,8 @@ const PaymentSchedule = () => {
                         ? 'bg-green-100 text-green-800' 
                         : payment.status === 'Progress'
                         ? 'bg-blue-100 text-blue-800'
+                        : payment.status === 'Closed'
+                        ? 'bg-red-100 text-red-800'
                         : 'bg-yellow-100 text-yellow-800'
                     }`}>
                       {payment.status}

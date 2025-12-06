@@ -131,7 +131,7 @@ const Loans = () => {
           <input type="text" placeholder="Search loans..." value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} className="border px-3 py-2 rounded-lg w-64" />
           <label className="text-sm text-gray-600">Show</label>
           <select value={rowsPerPage} onChange={e => { setRowsPerPage(Number(e.target.value)); setPage(1); }} className="border px-2 py-2 rounded">
-            <option value={5}>5</option>
+        
             <option value={10}>10</option>
             <option value={25}>25</option>
             <option value={50}>50</option>
@@ -148,7 +148,7 @@ const Loans = () => {
       )}
 
       <div className="overflow-x-auto bg-white border rounded-lg">
-        <table className="min-w-full">
+        <table className="min-w-full table-very-small">
           <thead>
             <tr>
               <th className="py-3 px-4 text-left border-b">User</th>

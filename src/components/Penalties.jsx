@@ -143,7 +143,7 @@ const Penalties = () => {
       )}
 
       <div className="overflow-x-auto bg-white border rounded-lg">
-        <table className="min-w-full">
+        <table className="min-w-full table-very-small">
           <thead>
             <tr>
               <th className="py-3 px-4 text-left border-b">User</th>

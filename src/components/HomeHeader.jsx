@@ -7,10 +7,10 @@ const HomeHeader = () => {
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 fixed w-full top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 flex-nowrap">
           {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
+          <div className="flex items-center flex-nowrap">
+            <Link to="/" className="flex items-center space-x-2 whitespace-nowrap">
               <img 
                 src="/logo.png" 
                 alt="SaveTracker" 
@@ -31,14 +31,14 @@ const HomeHeader = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-8 flex-nowrap">
               <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Features</a>
               <a href="#team" className="text-gray-600 hover:text-blue-600 transition-colors">Team</a>
               <a href="#contact" className="text-gray-600 hover:text-blue-600 transition-colors">Contact</a>
           </nav>
 
           {/* CTA Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-4 flex-nowrap">
             <Link 
               to="/login" 
               className="text-gray-600 hover:text-blue-600 font-medium transition-colors"

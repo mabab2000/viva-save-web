@@ -69,6 +69,10 @@ const Login = () => {
         // Save token and user info to localStorage
         localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('user_info', JSON.stringify(data.user_info));
+        // Also save profileId so Header/Profile components can fetch profile data
+        if (data.user_info && data.user_info.id) {
+          localStorage.setItem('profileId', data.user_info.id);
+        }
         navigate('/dashboard');
       } else {
         setApiError(data.detail || 'Login failed. Please check your credentials.');
