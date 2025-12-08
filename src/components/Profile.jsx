@@ -8,27 +8,75 @@ const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   // Default profile id - replaceable by storing/reading from auth or localStorage
   const defaultProfileId = '1f7ac917-c48e-4bf8-9c9a-0f5ab96def75';
   const profileId = window.localStorage.getItem('profileId') || defaultProfileId;
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`https://saving-api.mababa.app/api/profile/${profileId}`);
-        if (!res.ok) throw new Error(`Failed to fetch profile: ${res.status}`);
-        const data = await res.json();
-        setProfile(data);
-      } catch (err) {
-        setError(err.message);
-        toast.addToast(err.message, { type: 'error' });
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchProfile = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`https://saving-api.mababa.app/api/profile/${profileId}`);
+      if (!res.ok) throw new Error(`Failed to fetch profile: ${res.status}`);
+      const data = await res.json();
+      setProfile(data);
+    } catch (err) {
+      setError(err.message);
+      toast.addToast(err.message, { type: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.addToast('New passwords do not match', { type: 'error' });
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      toast.addToast('Password must be at least 6 characters long', { type: 'error' });
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      const res = await fetch(`https://saving-api.mababa.app/api/profile/${profileId}/password`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          old_password: passwordData.oldPassword,
+          new_password: passwordData.newPassword
+        })
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to change password');
+      }
+
+      toast.addToast('Password changed successfully!', { type: 'success' });
+      setShowPasswordModal(false);
+      setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (err) {
+      toast.addToast(err.message, { type: 'error' });
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchProfile();
   }, [profileId, toast]);
 
@@ -49,49 +97,233 @@ const Profile = () => {
   );
 
   return (
-    <div className="p-6">
-      <div className="mb-4">
-        <button onClick={() => navigate('/dashboard')} className="text-blue-600 hover:text-blue-800">← Back to Dashboard</button>
-      </div>
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-6">
+          <button 
+            onClick={() => navigate('/dashboard')} 
+            className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            <span>Back to Dashboard</span>
+          </button>
+        </div>
 
-      <div className="bg-white rounded-lg shadow p-6 max-w-3xl mx-auto">
-        <div className="flex items-center space-x-6">
-          <div className="w-28 h-28 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
-            {profile.profile_image_url ? (
-              // eslint-disable-next-line jsx-a11y/img-redundant-alt
-              <img src={profile.profile_image_url} alt="profile image" className="w-full h-full object-cover" />
-            ) : (
-              <div className="text-3xl font-bold text-gray-600">{(profile.username || 'U').charAt(0)}</div>
-            )}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Profile Card */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-xl shadow-sm border p-8">
+              <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
+                {/* Profile Image */}
+                <div className="relative">
+                  <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center shadow-lg">
+                    {profile.profile_image_url ? (
+                      <img 
+                        src={profile.profile_image_url} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : (
+                      <div className="text-4xl font-bold text-blue-600">
+                        {(profile.username || 'U').charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute bottom-2 right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white"></div>
+                </div>
+
+                {/* Profile Info */}
+                <div className="flex-1 text-center md:text-left">
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{profile.username}</h1>
+                  <p className="text-lg text-gray-600 mb-1">{profile.email}</p>
+                  <p className="text-md text-gray-500 mb-4">{profile.phone_number}</p>
+                  
+                  <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                    <div className="bg-green-50 px-6 py-3 rounded-lg border border-green-200">
+                      <div className="text-sm text-green-600 font-medium">Total Savings</div>
+                      <div className="text-2xl font-bold text-green-700">
+                        {new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(profile.total_saving)}
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-3">
+                      <button className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium">
+                        Edit Profile
+                      </button>
+                      <button 
+                        onClick={() => setShowPasswordModal(true)}
+                        className="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors font-medium"
+                      >
+                        Change Password
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="flex-1">
-            <h1 className="text-2xl font-semibold text-gray-800">{profile.username}</h1>
-            <p className="text-sm text-gray-500 mt-1">{profile.email}</p>
-            <p className="text-sm text-gray-500">{profile.phone_number}</p>
-
-            <div className="mt-4 flex items-center space-x-4">
-              <div>
-                <div className="text-xs text-gray-500">Total Saving</div>
-                <div className="text-xl font-bold text-green-600">{new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(profile.total_saving)}</div>
+          {/* Account Details Sidebar */}
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl shadow-sm border p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Account Details
+              </h3>
+              <div className="space-y-4">
+                <div className="border-b border-gray-100 pb-3">
+                  <div className="text-sm text-gray-500">User ID</div>
+                  <div className="text-sm font-mono text-gray-800 break-all">{profile.id}</div>
+                </div>
+                <div className="border-b border-gray-100 pb-3">
+                  <div className="text-sm text-gray-500">Email Address</div>
+                  <div className="text-sm text-gray-800">{profile.email}</div>
+                </div>
+                <div className="border-b border-gray-100 pb-3">
+                  <div className="text-sm text-gray-500">Phone Number</div>
+                  <div className="text-sm text-gray-800">{profile.phone_number}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-500">Total Savings</div>
+                  <div className="text-lg font-bold text-green-600">
+                    {new Intl.NumberFormat('en-US', { 
+                      style: 'currency', 
+                      currency: 'USD',
+                      maximumFractionDigits: 0 
+                    }).format(profile.total_saving)}
+                  </div>
+                </div>
               </div>
+            </div>
 
-              <div>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg">Edit Profile</button>
+            {/* Quick Actions */}
+            <div className="bg-white rounded-xl shadow-sm border p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+              <div className="space-y-3">
+                <button className="w-full text-left px-4 py-3 rounded-lg border hover:bg-gray-50 transition-colors flex items-center">
+                  <svg className="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span className="text-sm">Download Account Summary</span>
+                </button>
+                <button className="w-full text-left px-4 py-3 rounded-lg border hover:bg-gray-50 transition-colors flex items-center">
+                  <svg className="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span className="text-sm">Account Preferences</span>
+                </button>
+                <button className="w-full text-left px-4 py-3 rounded-lg border hover:bg-gray-50 transition-colors flex items-center">
+                  <svg className="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-sm">Help & Support</span>
+                </button>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-6 text-sm text-gray-700">
-          <h3 className="font-medium mb-2">Account Details</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div><strong>ID:</strong> {profile.id}</div>
-            <div><strong>Email:</strong> {profile.email}</div>
-            <div><strong>Phone:</strong> {profile.phone_number}</div>
-            <div><strong>Total Saving:</strong> {new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(profile.total_saving)}</div>
+        {/* Password Change Modal */}
+        {showPasswordModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">Change Password</h3>
+                <button 
+                  onClick={() => {
+                    setShowPasswordModal(false);
+                    setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <form onSubmit={handlePasswordChange} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Current Password
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={passwordData.oldPassword}
+                    onChange={(e) => setPasswordData({...passwordData, oldPassword: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter current password"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    value={passwordData.newPassword}
+                    onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter new password (min 6 characters)"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Confirm New Password
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={passwordData.confirmPassword}
+                    onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Confirm new password"
+                  />
+                </div>
+
+                <div className="flex space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowPasswordModal(false);
+                      setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+                    }}
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    disabled={passwordLoading}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={passwordLoading}
+                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center justify-center"
+                  >
+                    {passwordLoading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      'Change Password'
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

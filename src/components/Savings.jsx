@@ -31,9 +31,12 @@ const Savings = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
   
-  // Date filter states
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  // Date filter states - default from 2025-01-01 up to today
+  const today = new Date();
+  const defaultStart = new Date(2025, 0, 1); // Jan 1, 2025
+  const isoDate = (d) => d.toISOString().slice(0,10);
+  const [dateFrom, setDateFrom] = useState(isoDate(defaultStart));
+  const [dateTo, setDateTo] = useState(isoDate(today));
 
   // Export loading states
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -393,8 +396,8 @@ const Savings = () => {
         <div>
           <h2 className="text-2xl font-bold">Savings</h2>
           <div className="text-sm text-gray-600 mt-1">
-            {totalCount != null && <span className="mr-4">Entries: {totalCount}</span>}
-            {totalAmount != null && <span>Total: {formatNumber(totalAmount)}</span>}
+            <span className="mr-4">Entries: {filteredSavings.length}</span>
+            <span>Total: {formatNumber(filteredSavings.reduce((s, it) => s + (Number(it.amount) || 0), 0))}</span>
           </div>
         </div>
         <div className="flex items-center space-x-3">
@@ -415,10 +418,10 @@ const Savings = () => {
             />
             {(dateFrom || dateTo) && (
               <button
-                onClick={() => { setDateFrom(''); setDateTo(''); setPage(1); }}
+                onClick={() => { setDateFrom(isoDate(defaultStart)); setDateTo(isoDate(today)); setPage(1); }}
                 className="text-sm text-blue-600 hover:text-blue-800 underline"
               >
-                Clear
+                Reset
               </button>
             )}
           </div>

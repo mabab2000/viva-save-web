@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom'; // Ensure Link is imported consistently
+import MonthlySavingsCard from './MonthlySavingsCard';
 
 const DashboardOverview = () => {
   const [savingsGoals] = useState([
@@ -73,6 +75,13 @@ const DashboardOverview = () => {
     }
   ];
 
+  const cardLinks = {
+    'Total Savings': '/dashboard/savings',
+    'Total Loans': '/dashboard/loans',
+    'Total Penalties': '/dashboard/penalties',
+    'Members': '/dashboard/users'
+  };
+
   const WS_URL = 'wss://saving-api.mababa.app/ws/stats';
 
   const connect = () => {
@@ -136,7 +145,7 @@ const DashboardOverview = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {statsCards.map((stat, index) => (
-          <div key={index} className="bg-white rounded-xl shadow-sm border border-b border-blue-600 p-6">
+          <Link key={index} to={cardLinks[stat.label] || '#'} className="block bg-white rounded-xl shadow-sm border border-b border-blue-600 p-6 hover:shadow-md transition">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-600">{stat.label}</p>
@@ -160,7 +169,7 @@ const DashboardOverview = () => {
                 {stat.change}
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -169,9 +178,7 @@ const DashboardOverview = () => {
         <div className="bg-white rounded-xl shadow-sm border border-blue-600 p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-800">Recent saving</h2>
-            <button className="text-savings-blue hover:text-savings-purple font-medium text-sm">
-              View All
-            </button>
+            <Link to="/dashboard/savings" className="text-savings-blue hover:text-savings-purple font-medium text-sm">View All</Link>
           </div>
           
           <div className="space-y-4">
@@ -222,9 +229,7 @@ const DashboardOverview = () => {
         <div className="bg-white rounded-xl shadow-sm border border-blue-600 p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-800">Recent Monthly loan</h2>
-            <button className="text-savings-blue hover:text-savings-purple font-medium text-sm">
-              View All
-            </button>
+            <Link to="/dashboard/loans" className="text-savings-blue hover:text-savings-purple font-medium text-sm">View All</Link>
           </div>
           
           <div className="space-y-3">
@@ -254,8 +259,9 @@ const DashboardOverview = () => {
           </div>
         </div>
       </div>
+      {/* Full width monthly savings card (Jan - Dec) */}
+      <MonthlySavingsCard />
 
-      
     </div>
   );
 };

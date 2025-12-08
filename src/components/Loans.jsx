@@ -11,7 +11,7 @@ const mockLoans = [
 const Loans = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loans, setLoans] = useState([]);
   const [totalAmount, setTotalAmount] = useState(null);
   const [totalCount, setTotalCount] = useState(null);

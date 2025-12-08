@@ -33,12 +33,21 @@ const PaymentSchedule = () => {
     let remainingBalance = loanAmount;
     let remainingPaid = totalPaid;
     
+    // Helper: get last day (Date object) for the month that is `offset` months after the issued month
+    const getLastDayOfMonth = (baseDate, offset) => {
+      const baseMonth = baseDate.getMonth();
+      const baseYear = baseDate.getFullYear();
+      const targetMonthIndex = baseMonth + offset; // may exceed 11
+      const year = baseYear + Math.floor(targetMonthIndex / 12);
+      const month = ((targetMonthIndex % 12) + 12) % 12;
+      // new Date(year, month + 1, 0) -> last day of `month`
+      return new Date(year, month + 1, 0);
+    };
+
     for (let month = 1; month <= paymentRange; month++) {
-      // Calculate payment date for this month - last day of the month
-      const paymentDate = new Date(issued);
-      paymentDate.setMonth(paymentDate.getMonth() + month);
-      // Set to last day of the month
-      paymentDate.setMonth(paymentDate.getMonth() + 1, 0);
+      // Calculate payment date for this installment as the last day of the target month
+      const paymentDateObj = getLastDayOfMonth(issued, month);
+      const paymentDate = paymentDateObj;
       
       // Interest is calculated on remaining balance
       const interest = remainingBalance * MONTHLY_INTEREST_RATE;

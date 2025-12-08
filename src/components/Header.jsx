@@ -21,7 +21,7 @@ const Header = ({ sidebarOpen, onToggleSidebar }) => {
   ];
 
   return (
-    <header className="bg-white shadow-sm border-b border-blue-600 py-4">
+    <header className="bg-white shadow-sm border-b py-4">
       <div className="flex items-center justify-between flex-nowrap">
         {/* Left Section - Toggle & Search */}
         <div className="flex items-center space-x-4 flex-nowrap">
@@ -117,8 +117,7 @@ const Header = ({ sidebarOpen, onToggleSidebar }) => {
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                 <div className="py-2">
                   <Link to="/dashboard/profile" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 block">Profile</Link>
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Account Preferences</button>
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Help & Support</button>
+               
                   <hr className="my-2" />
                   <Link to="/login" className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 block">Sign Out</Link>
                 </div>
