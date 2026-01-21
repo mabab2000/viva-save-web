@@ -29,6 +29,18 @@ const Users = () => {
   const [savingTargetUser, setSavingTargetUser] = useState(null);
   const [savingAmount, setSavingAmount] = useState('');
   const [savingLoading, setSavingLoading] = useState(false);
+  // Add Distribution modal states
+  const [showDistributionModal, setShowDistributionModal] = useState(false);
+  const [distributionTargetUser, setDistributionTargetUser] = useState(null);
+  const [distributionAmount, setDistributionAmount] = useState('');
+  const [distributionYear, setDistributionYear] = useState(new Date().getFullYear());
+  const [distributionLoading, setDistributionLoading] = useState(false);
+  // Pay-using-saving modal states
+  const [showPayModal, setShowPayModal] = useState(false);
+  const [payTargetUser, setPayTargetUser] = useState(null);
+  const [payAmount, setPayAmount] = useState('');
+  const [payDescription, setPayDescription] = useState('');
+  const [payLoading, setPayLoading] = useState(false);
   // Add Penalty modal states
   const [showPenaltyModal, setShowPenaltyModal] = useState(false);
   const [penaltyTargetUser, setPenaltyTargetUser] = useState(null);
@@ -72,8 +84,9 @@ const Users = () => {
           email: u.email || '',
           phone: u.phone_number || u.phone || '',
           status: 'Active',
-          // API may return total_saving as part of user object
-          total_saving: typeof u.total_saving !== 'undefined' ? u.total_saving : null
+          // API may return total_saving and original_saving
+          total_saving: typeof u.total_saving !== 'undefined' ? Number(u.total_saving) : null,
+          original_saving: typeof u.original_saving !== 'undefined' ? Number(u.original_saving) : (typeof u.total_saving !== 'undefined' ? Number(u.total_saving) : null)
         }));
         setUsers(transformed);
       } catch (err) {
@@ -92,8 +105,9 @@ const Users = () => {
 
   const filteredUsers = users.filter(u =>
     u.name.toLowerCase().includes(search.toLowerCase()) ||
-    u.email.toLowerCase().includes(search.toLowerCase()) ||
-    u.phone.includes(search)
+    (u.email && u.email.toLowerCase().includes(search.toLowerCase())) ||
+    u.phone.includes(search) ||
+    (u.original_saving !== null && String(u.original_saving).includes(search))
   );
   const paginatedUsers = filteredUsers.slice((page - 1) * rowsPerPage, page * rowsPerPage);
   const pageCount = Math.max(1, Math.ceil(filteredUsers.length / rowsPerPage));
@@ -355,6 +369,108 @@ const Users = () => {
     }
   };
 
+  // Add distribution to user
+  const handleAddDistribution = (user) => {
+    setOpenDropdownId(null);
+    setDistributionTargetUser(user);
+    setDistributionAmount('');
+    setDistributionYear(new Date().getFullYear());
+    setShowDistributionModal(true);
+  };
+
+  const confirmAddDistribution = async () => {
+    if (!distributionTargetUser || !distributionAmount) return;
+    const year = Number(distributionYear) || new Date().getFullYear();
+    const amount = Number(distributionAmount);
+    if (!amount || amount <= 0) {
+      toast.addToast('Please enter a valid amount', { type: 'error' });
+      return;
+    }
+
+    setDistributionLoading(true);
+    try {
+      const payload = {
+        user_id: distributionTargetUser.id,
+        full_name: distributionTargetUser.name,
+        amount,
+        year
+      };
+
+      const res = await fetch('https://saving-api.mababa.app/api/distribution', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const body = await res.json().catch(() => null);
+      if (!res.ok) {
+        const errMsg = (body && (body.detail || body.message)) || `Failed: ${res.status}`;
+        throw new Error(errMsg);
+      }
+
+      toast.addToast((body && body.message) ? body.message : `Distribution added for ${distributionTargetUser.name}`, { type: 'success' });
+      setShowDistributionModal(false);
+      setDistributionTargetUser(null);
+      setDistributionAmount('');
+      setDistributionYear(new Date().getFullYear());
+    } catch (err) {
+      console.error(err);
+      toast.addToast(err.message || 'Failed to add distribution', { type: 'error' });
+    } finally {
+      setDistributionLoading(false);
+    }
+  };
+
+  // Pay loan using user's saving
+  const handleOpenPayUsingSaving = (user) => {
+    setOpenDropdownId(null);
+    setPayTargetUser(user);
+    setPayAmount('');
+    setPayDescription('');
+    setShowPayModal(true);
+  };
+
+  const confirmPayUsingSaving = async () => {
+    if (!payTargetUser || !payAmount) return;
+    const amount = Number(payAmount);
+    if (!amount || amount <= 0) {
+      toast.addToast('Please enter a valid amount', { type: 'error' });
+      return;
+    }
+
+    setPayLoading(true);
+    try {
+      const payload = {
+        user_id: payTargetUser.id,
+        amount,
+        description: payDescription || `Pay ${amount} on loan using saving`
+      };
+
+      const res = await fetch('https://saving-api.mababa.app/api/pay-loan-using-saving', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const body = await res.json().catch(() => null);
+      if (!res.ok) {
+        const errMsg = (body && (body.detail || body.message)) || `Failed: ${res.status}`;
+        throw new Error(errMsg);
+      }
+
+      toast.addToast(`Paid ${amount} using saving for ${payTargetUser.name}`, { type: 'success' });
+      setShowPayModal(false);
+      setPayTargetUser(null);
+      setPayAmount('');
+      setPayDescription('');
+    } catch (err) {
+      console.error(err);
+      toast.addToast(err.message || 'Failed to process payment', { type: 'error' });
+    } finally {
+      setPayLoading(false);
+    }
+  };
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-4">
@@ -389,14 +505,14 @@ const Users = () => {
       <div className="overflow-x-auto bg-white border rounded-lg">
         <table className="min-w-full table-very-small">
           <thead>
-            <tr>
-              <th className="py-3 px-4 text-left border-b">Name</th>
-              <th className="py-3 px-4 text-left border-b">Total Saving</th>
-              <th className="py-3 px-4 text-left border-b">Email</th>
-              <th className="py-3 px-4 text-left border-b">Phone</th>
-              <th className="py-3 px-4 text-left border-b">Status</th>
-              <th className="py-3 px-4 text-left border-b">Actions</th>
-            </tr>
+              <tr>
+                <th className="py-3 px-4 text-left border-b">Name</th>
+                <th className="py-3 px-4 text-left border-b">Total Saving</th>
+                <th className="py-3 px-4 text-left border-b">Original Saving</th>
+                <th className="py-3 px-4 text-left border-b">Phone</th>
+                <th className="py-3 px-4 text-left border-b">Status</th>
+                <th className="py-3 px-4 text-left border-b">Actions</th>
+              </tr>
           </thead>
           <tbody>
             {loading ? (
@@ -413,7 +529,7 @@ const Users = () => {
                 <tr key={user.id} className="hover:bg-gray-50">
                   <td className="py-3 px-4 border-b">{user.name}</td>
                   <td className="py-3 px-4 border-b">{typeof user.total_saving === 'number' ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(user.total_saving) : '—'}</td>
-                  <td className="py-3 px-4 border-b">{user.email}</td>
+                  <td className="py-3 px-4 border-b">{(typeof user.original_saving === 'number' || (typeof user.original_saving === 'string' && !isNaN(user.original_saving))) ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Number(user.original_saving)) : '—'}</td>
                   <td className="py-3 px-4 border-b">{user.phone}</td>
                   <td className="py-3 px-4 border-b">{user.status}</td>
                   <td className="py-3 px-4 border-b relative" ref={openDropdownId === user.id ? dropdownRef : null}>
@@ -432,6 +548,8 @@ const Users = () => {
                         <button onClick={() => openEditModal(user.id)} className="w-full text-left px-4 py-2 hover:bg-gray-50">Edit</button>
                         <button onClick={() => handleAddLoan(user)} className="w-full text-left px-4 py-2 text-yellow-700 hover:bg-gray-50">Add Loan</button>
                         <button onClick={() => { setOpenDropdownId(null); setPenaltyTargetUser(user); setPenaltyReason(''); setPenaltyAmount(''); setShowPenaltyModal(true); }} className="w-full text-left px-4 py-2 text-purple-600 hover:bg-gray-50">Add Penalty</button>
+                        <button onClick={() => { setOpenDropdownId(null); setDistributionTargetUser(user); setDistributionAmount(''); setDistributionYear(new Date().getFullYear()); setShowDistributionModal(true); }} className="w-full text-left px-4 py-2 text-indigo-600 hover:bg-gray-50">Add Distribution</button>
+                        <button onClick={() => { setOpenDropdownId(null); setPayTargetUser(user); setPayAmount(''); setPayDescription(''); setShowPayModal(true); }} className="w-full text-left px-4 py-2 text-blue-600 hover:bg-gray-50">Pay Using Saving</button>
                         <button onClick={() => handleAddSaving(user)} className="w-full text-left px-4 py-2 text-green-600 hover:bg-gray-50">Add Saving</button>
                         <button onClick={() => handleDelete(user.id)} className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">Delete</button>
                       </div>
@@ -548,6 +666,107 @@ const Users = () => {
               >
                 {savingLoading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>}
                 <span>{savingLoading ? 'Adding...' : 'Add Saving'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Distribution modal */}
+      {showDistributionModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-md p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">Add Distribution</h3>
+              <p className="text-sm text-gray-600 mt-2">Add distribution for: <span className="font-medium">{distributionTargetUser?.name}</span></p>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+              <input
+                type="number"
+                placeholder="Enter amount"
+                value={distributionAmount}
+                onChange={(e) => setDistributionAmount(e.target.value)}
+                className="w-full border px-3 py-2 rounded-lg"
+                min="0"
+                step="0.01"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
+              <input
+                type="number"
+                value={distributionYear}
+                onChange={(e) => setDistributionYear(e.target.value)}
+                className="w-full border px-3 py-2 rounded-lg"
+                min="1900"
+                max="2100"
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => { setShowDistributionModal(false); setDistributionTargetUser(null); setDistributionAmount(''); setDistributionYear(new Date().getFullYear()); }}
+                className="px-4 py-2 border rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmAddDistribution}
+                disabled={distributionLoading || !distributionAmount}
+                className="px-4 py-2 bg-indigo-600 text-white rounded flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {distributionLoading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>}
+                <span>{distributionLoading ? 'Adding...' : 'Add Distribution'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pay Using Saving modal */}
+      {showPayModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-md p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">Pay Using Saving</h3>
+              <p className="text-sm text-gray-600 mt-2">Process payment from saving for: <span className="font-medium">{payTargetUser?.name}</span></p>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+              <input
+                type="number"
+                placeholder="Enter amount"
+                value={payAmount}
+                onChange={(e) => setPayAmount(e.target.value)}
+                className="w-full border px-3 py-2 rounded-lg"
+                min="0"
+                step="0.01"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+              <input
+                type="text"
+                placeholder="Optional description"
+                value={payDescription}
+                onChange={(e) => setPayDescription(e.target.value)}
+                className="w-full border px-3 py-2 rounded-lg"
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => { setShowPayModal(false); setPayTargetUser(null); setPayAmount(''); setPayDescription(''); }}
+                className="px-4 py-2 border rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmPayUsingSaving}
+                disabled={payLoading || !payAmount}
+                className="px-4 py-2 bg-blue-600 text-white rounded flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {payLoading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>}
+                <span>{payLoading ? 'Processing...' : 'Pay Using Saving'}</span>
               </button>
             </div>
           </div>

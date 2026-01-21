@@ -9,6 +9,7 @@ import PaymentSchedule from './PaymentSchedule';
 import Penalties from './Penalties';
 import Savings from './Savings';
 import Profile from './Profile';
+import Distribution from './Distribution';
 import { Routes, Route, useLocation } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -18,6 +19,7 @@ const Dashboard = () => {
   const activeSection = (() => {
     if (location.pathname.startsWith('/dashboard/users')) return 'users';
     if (location.pathname.startsWith('/dashboard/savings')) return 'savings';
+    if (location.pathname.startsWith('/dashboard/distribution')) return 'distribution';
     if (location.pathname.startsWith('/dashboard/loans')) return 'loans';
     if (location.pathname.startsWith('/dashboard/penalties')) return 'penalties';
     return 'overview';
@@ -44,6 +46,7 @@ const Dashboard = () => {
             <Route path="/payment/:id" element={<Payment />} />
             <Route path="/payment-schedule/:loanId" element={<PaymentSchedule />} />
             <Route path="/penalties" element={<Penalties />} />
+            <Route path="/distribution" element={<Distribution />} />
             <Route path="/profile" element={<Profile />} />
           </Routes>
         </main>
