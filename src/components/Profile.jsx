@@ -82,9 +82,11 @@ const Profile = () => {
 
   if (loading) return (
     <div className="p-6">
-      <div className="flex items-center space-x-2">
-        <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-        <span>Loading profile...</span>
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <div className="w-20 h-20 mx-auto border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
+          <div className="mt-3 text-gray-600">Loading profile...</div>
+        </div>
       </div>
     </div>
   );

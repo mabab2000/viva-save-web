@@ -127,12 +127,14 @@ const Penalties = () => {
         </div>
       </div>
 
-      {loading && (
-        <div className="mb-4 text-sm text-gray-600 flex items-center space-x-2">
-          <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
-          <div>Loading penalties...</div>
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="w-20 h-20 mx-auto border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
+            <div className="mt-3 text-gray-600">Loading penalties...</div>
+          </div>
         </div>
-      )}
+      ) : null}
       {error && <div className="mb-4 text-sm text-red-600">Error loading penalties: {error}</div>}
 
       {(totalPaid != null || totalUnpaid != null) && (

@@ -339,29 +339,27 @@ const Distribution = () => {
             </div>
           </div>
 
-          <div className="overflow-x-auto bg-white border rounded-lg">
-            <table className="min-w-full table-very-small">
-              <thead>
-                <tr>
-                  <th className="py-3 px-4 text-left border-b">Name</th>
-                  {years.map(y => (
-                    <th key={y} className="py-3 px-4 text-right border-b">{y}</th>
-                  ))}
-                  <th className="py-3 px-4 text-right border-b">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <div className="w-20 h-20 mx-auto border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
+                <div className="mt-3 text-gray-600">Loading distribution...</div>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-x-auto bg-white border rounded-lg">
+              <table className="min-w-full table-very-small">
+                <thead>
                   <tr>
-                    <td colSpan={1 + years.length} className="py-6 text-center text-gray-600">
-                      <div className="flex items-center justify-center space-x-2">
-                        <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
-                        <div>Loading distribution...</div>
-                      </div>
-                    </td>
+                    <th className="py-3 px-4 text-left border-b">Name</th>
+                    {years.map(y => (
+                      <th key={y} className="py-3 px-4 text-right border-b">{y}</th>
+                    ))}
+                    <th className="py-3 px-4 text-right border-b">Actions</th>
                   </tr>
-                ) : (
-                  paged.map(row => (
+                </thead>
+                <tbody>
+                  {paged.map(row => (
                     <tr key={row.id} className="hover:bg-gray-50">
                       <td className="py-3 px-4 border-b">{row.name}</td>
                       {years.map(y => (
@@ -393,17 +391,17 @@ const Distribution = () => {
                         </div>
                       </td>
                     </tr>
-                  ))
-                )}
+                  ))}
 
-                {!loading && paged.length === 0 && (
-                  <tr>
-                    <td colSpan={1 + years.length} className="py-6 text-center text-gray-500">No records found</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                  {paged.length === 0 && (
+                    <tr>
+                      <td colSpan={1 + years.length} className="py-6 text-center text-gray-500">No records found</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           <div className="mt-4 flex justify-between items-center">
             <div className="text-sm text-gray-600">Showing {(page - 1) * rowsPerPage + 1} - {Math.min(page * rowsPerPage, filtered.length)} of {filtered.length}</div>
@@ -437,29 +435,27 @@ const Distribution = () => {
             </div>
           </div>
 
-          <div className="overflow-x-auto bg-white border rounded-lg">
-            <table className="min-w-full table-very-small">
-              <thead>
-                <tr>
-                  <th className="py-3 px-4 text-left border-b">Name</th>
-                  <th className="py-3 px-4 text-right border-b">Amount</th>
-                  <th className="py-3 px-4 text-left border-b">Description</th>
-                  <th className="py-3 px-4 text-left border-b">Date</th>
-                  <th className="py-3 px-4 text-right border-b">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {payUsingSavingLoading ? (
+          {payUsingSavingLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <div className="w-20 h-20 mx-auto border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
+                <div className="mt-3 text-gray-600">Loading pay using saving records...</div>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-x-auto bg-white border rounded-lg">
+              <table className="min-w-full table-very-small">
+                <thead>
                   <tr>
-                    <td colSpan={5} className="py-6 text-center text-gray-600">
-                      <div className="flex items-center justify-center space-x-2">
-                        <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
-                        <div>Loading pay using saving records...</div>
-                      </div>
-                    </td>
+                    <th className="py-3 px-4 text-left border-b">Name</th>
+                    <th className="py-3 px-4 text-right border-b">Amount</th>
+                    <th className="py-3 px-4 text-left border-b">Description</th>
+                    <th className="py-3 px-4 text-left border-b">Date</th>
+                    <th className="py-3 px-4 text-right border-b">Actions</th>
                   </tr>
-                ) : (
-                  payUsingSavingPaged.map(record => (
+                </thead>
+                <tbody>
+                  {payUsingSavingPaged.map(record => (
                     <tr key={record.id} className="hover:bg-gray-50">
                       <td className="py-3 px-4 border-b">{record.full_name}</td>
                       <td className="py-3 px-4 border-b text-right font-medium">{fmt(record.amount)}</td>
@@ -505,17 +501,17 @@ const Distribution = () => {
                         </div>
                       </td>
                     </tr>
-                  ))
-                )}
+                  ))}
 
-                {!payUsingSavingLoading && payUsingSavingPaged.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="py-6 text-center text-gray-500">No pay using saving records found</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                  {payUsingSavingPaged.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="py-6 text-center text-gray-500">No pay using saving records found</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           <div className="mt-4 flex justify-between items-center">
             <div className="text-sm text-gray-600">

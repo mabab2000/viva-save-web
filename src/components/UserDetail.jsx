@@ -228,7 +228,7 @@ const UserDetail = () => {
       </div>
 
       {/* Basic user info (above tabs) */}
-      <div className="mb-6 p-4 bg-white border rounded-lg">
+      <div className="mb-6 p-4 bg-white border border-blue-500 rounded-lg">
         <div className="flex items-center justify-between">
           <div>
             <div className="text-sm text-gray-500">Name</div>
@@ -277,7 +277,14 @@ const UserDetail = () => {
       </div>
 
       {loading ? (
-        <div className="p-4 text-gray-600">Loading user details...</div>
+        <div className="p-6">
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="w-20 h-20 mx-auto border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
+              <div className="mt-3 text-gray-600">Loading user details...</div>
+            </div>
+          </div>
+        </div>
       ) : (
         <>
           <SimpleTable columns={columns} rows={paged} />

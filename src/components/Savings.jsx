@@ -491,64 +491,63 @@ const Savings = () => {
         <div className="mb-4 text-sm text-red-600">Error loading savings: {error}</div>
       )}
 
-      <div className="overflow-x-auto bg-white border rounded-lg">
-          <table className="min-w-full table-very-small">
-          <thead>
-            <tr>
-              <th className="py-2 px-3 text-left border-b">User</th>
-              <th className="py-2 px-3 text-left border-b">Phone</th>
-              <th className="py-2 px-3 text-left border-b">Amount</th>
-              <th className="py-2 px-3 text-left border-b">Date</th>
-              <th className="py-2 px-3 text-left border-b">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={5} className="py-6 text-center text-gray-600">
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
-                    <div>Loading savings...</div>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              paginatedSavings.map(s => (
-                <tr key={s.id} className="hover:bg-gray-50">
-                  <td className="py-2 px-3 border-b">{s.username}</td>
-                  <td className="py-2 px-3 border-b">{s.phone_number}</td>
-                  <td className="py-2 px-3 border-b">{formatNumber(s.amount)}</td>
-                  <td className="py-2 px-3 border-b">{s.created_at ? new Date(s.created_at).toLocaleString() : ''}</td>
-                  <td className="py-2 px-3 border-b relative" ref={openDropdownId === s.id ? dropdownRef : null}>
-                    <button onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === s.id ? null : s.id); }} className="p-2 rounded hover:bg-gray-100">
-                      <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                    </button>
-                    {openDropdownId === s.id && (
-                      <div className="absolute right-2 top-10 w-40 bg-white border rounded-md shadow-md z-20" onClick={(e) => e.stopPropagation()}>
-                        <button onClick={() => openEditModal(s.id)} className="w-full text-left px-4 py-2 hover:bg-gray-50">Edit</button>
-                        <button onClick={() => handleDelete(s.id)} className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">Delete</button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))
-            )}
-
-            {!loading && paginatedSavings.length === 0 && (
-              <tr><td colSpan={5} className="py-6 text-center text-gray-500">No savings found</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="mt-4 flex justify-between items-center">
-        <div className="text-sm text-gray-600">Showing {(page - 1) * rowsPerPage + 1} - {Math.min(page * rowsPerPage, filteredSavings.length)} of {filteredSavings.length}</div>
-        <div className="flex items-center space-x-2">
-          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 border rounded disabled:opacity-50">Prev</button>
-          <span>Page {page} of {pageCount}</span>
-          <button onClick={() => setPage(p => Math.min(pageCount, p + 1))} disabled={page === pageCount} className="px-3 py-1 border rounded disabled:opacity-50">Next</button>
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="w-20 h-20 mx-auto border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
+            <div className="mt-3 text-gray-600">Loading savings...</div>
+          </div>
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="overflow-x-auto bg-white border rounded-lg">
+            <table className="min-w-full table-very-small">
+              <thead>
+                <tr>
+                  <th className="py-2 px-3 text-left border-b">User</th>
+                  <th className="py-2 px-3 text-left border-b">Phone</th>
+                  <th className="py-2 px-3 text-left border-b">Amount</th>
+                  <th className="py-2 px-3 text-left border-b">Date</th>
+                  <th className="py-2 px-3 text-left border-b">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedSavings.map(s => (
+                  <tr key={s.id} className="hover:bg-gray-50">
+                    <td className="py-2 px-3 border-b">{s.username}</td>
+                    <td className="py-2 px-3 border-b">{s.phone_number}</td>
+                    <td className="py-2 px-3 border-b">{formatNumber(s.amount)}</td>
+                    <td className="py-2 px-3 border-b">{s.created_at ? new Date(s.created_at).toLocaleString() : ''}</td>
+                    <td className="py-2 px-3 border-b relative" ref={openDropdownId === s.id ? dropdownRef : null}>
+                      <button onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === s.id ? null : s.id); } } className="p-2 rounded hover:bg-gray-100">
+                        <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                      </button>
+                      {openDropdownId === s.id && (
+                        <div className="absolute right-2 top-10 w-40 bg-white border rounded-md shadow-md z-20" onClick={(e) => e.stopPropagation()}>
+                          <button onClick={() => openEditModal(s.id)} className="w-full text-left px-4 py-2 hover:bg-gray-50">Edit</button>
+                          <button onClick={() => handleDelete(s.id)} className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">Delete</button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+
+                {!loading && paginatedSavings.length === 0 && (
+                  <tr><td colSpan={5} className="py-6 text-center text-gray-500">No savings found</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4 flex justify-between items-center">
+            <div className="text-sm text-gray-600">Showing {(page - 1) * rowsPerPage + 1} - {Math.min(page * rowsPerPage, filteredSavings.length)} of {filteredSavings.length}</div>
+            <div className="flex items-center space-x-2">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 border rounded disabled:opacity-50">Prev</button>
+              <span>Page {page} of {pageCount}</span>
+              <button onClick={() => setPage(p => Math.min(pageCount, p + 1))} disabled={page === pageCount} className="px-3 py-1 border rounded disabled:opacity-50">Next</button>
+            </div>
+          </div>
+        </>
+      )}
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">

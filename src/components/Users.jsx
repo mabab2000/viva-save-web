@@ -503,10 +503,18 @@ const Users = () => {
         <div className="mb-4 text-sm text-red-600">Error loading users: {error}</div>
       )}
 
-      <div className="overflow-x-auto bg-white border rounded-lg">
-        <table className="min-w-full table-very-small">
-          <thead>
-                <tr>
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="w-20 h-20 mx-auto border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
+            <div className="mt-3 text-gray-600">Loading users...</div>
+          </div>
+        </div>
+      ) : (
+        <div className="overflow-x-auto bg-white border rounded-lg">
+          <table className="min-w-full table-very-small">
+            <thead>
+              <tr>
                 <th className="py-3 px-4 text-left border-b">Name</th>
                 <th className="py-3 px-4 text-right border-b">Total Saving</th>
                 <th className="py-3 px-4 text-right border-b">Original Saving</th>
@@ -514,19 +522,9 @@ const Users = () => {
                 <th className="py-3 px-4 text-left border-b">Status</th>
                 <th className="py-3 px-4 text-left border-b">Actions</th>
               </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={6} className="py-6 text-center text-gray-600">
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
-                    <div>Loading users...</div>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-                paginatedUsers.map(user => (
+            </thead>
+            <tbody>
+              {paginatedUsers.map(user => (
                 <tr key={user.id} className="hover:bg-gray-50">
                   <td className="py-3 px-4 border-b">
                     <Link to={`/dashboard/users/${user.id}`} className="text-blue-600 hover:underline">
@@ -561,17 +559,17 @@ const Users = () => {
                     )}
                   </td>
                 </tr>
-              ))
-            )}
+              ))}
 
-            {!loading && paginatedUsers.length === 0 && (
-              <tr>
-                <td colSpan={6} className="py-6 text-center text-gray-500">No users found</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              {paginatedUsers.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="py-6 text-center text-gray-500">No users found</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <div className="mt-4 flex justify-between items-center">
         <div className="text-sm text-gray-600">Showing {(page - 1) * rowsPerPage + 1} - {Math.min(page * rowsPerPage, filteredUsers.length)} of {filteredUsers.length}</div>

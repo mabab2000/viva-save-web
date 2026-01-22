@@ -14,14 +14,10 @@ const Header = ({ sidebarOpen, onToggleSidebar }) => {
     Header.fetchProfile(setProfile);
   }, []);
 
-  const notifications = [
-    { id: 1, message: "You've reached 80% of your Emergency Fund goal!", type: "success", time: "2 hours ago" },
-    { id: 2, message: "Monthly savings report is ready", type: "info", time: "1 day ago" },
-    { id: 3, message: "Reminder: Update your vacation savings goal", type: "warning", time: "3 days ago" }
-  ];
+
 
   return (
-    <header className="bg-white shadow-sm border-b py-4">
+    <header className="bg-white shadow-sm border-b border-blue-500 py-4">
       <div className="flex items-center justify-between flex-nowrap">
         {/* Left Section - Toggle & Search */}
         <div className="flex items-center space-x-4 flex-nowrap">

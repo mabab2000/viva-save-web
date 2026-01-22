@@ -80,10 +80,10 @@ const Sidebar = ({ isOpen, activeSection, onSectionChange }) => {
       {/* Navigation Menu */}
       <nav className="mt-6">
         <div className="space-y-1 px-3">
-          <Link to="/dashboard" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'overview' ? 'bg-savings-blue text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[0].icon}</span> {isOpen && <span className="ml-3">Overview</span>} </Link>
-          <Link to="/dashboard/users" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'users' ? 'bg-savings-blue text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[1].icon}</span> {isOpen && <span className="ml-3">Users</span>} </Link>
-          <Link to="/dashboard/savings" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'savings' ? 'bg-savings-blue text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[2].icon}</span> {isOpen && <span className="ml-3">Savings</span>} </Link>
-          <Link to="/dashboard/distribution" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'distribution' ? 'bg-savings-blue text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> 
+          <Link to="/dashboard" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'overview' ? 'border border-savings-blue text-blue-500 font-extrabold' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[0].icon}</span> {isOpen && <span className="ml-3">Overview</span>} </Link>
+          <Link to="/dashboard/users" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'users' ? 'border border-savings-blue text-blue-500 font-extrabold' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[1].icon}</span> {isOpen && <span className="ml-3">Users</span>} </Link>
+          <Link to="/dashboard/savings" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'savings' ? 'border border-savings-blue text-blue-500 font-extrabold' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[2].icon}</span> {isOpen && <span className="ml-3">Savings</span>} </Link>
+          <Link to="/dashboard/distribution" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'distribution' ? 'border border-savings-blue text-blue-500 font-extrabold' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> 
             <span className="flex-shrink-0">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3v18h18" />
@@ -92,8 +92,8 @@ const Sidebar = ({ isOpen, activeSection, onSectionChange }) => {
             </span>
             {isOpen && <span className="ml-3">Distribution</span>} 
           </Link>
-          <Link to="/dashboard/loans" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'loans' ? 'bg-savings-blue text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[3].icon}</span> {isOpen && <span className="ml-3">Loans</span>} </Link>
-          <Link to="/dashboard/penalties" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'penalties' ? 'bg-savings-blue text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[4].icon}</span> {isOpen && <span className="ml-3">Penalties</span>} </Link>
+          <Link to="/dashboard/loans" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'loans' ? 'border border-savings-blue text-blue-500 font-extrabold' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[3].icon}</span> {isOpen && <span className="ml-3">Loans</span>} </Link>
+          <Link to="/dashboard/penalties" className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${activeSection === 'penalties' ? 'border border-savings-blue text-blue-500 font-extrabold' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}> <span className="flex-shrink-0">{menuItems[4].icon}</span> {isOpen && <span className="ml-3">Penalties</span>} </Link>
         </div>
       </nav>
 

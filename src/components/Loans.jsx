@@ -140,62 +140,66 @@ const Loans = () => {
         </div>
       </div>
 
-      {loading && (
-        <div className="mb-4 text-sm text-gray-600 flex items-center space-x-2">
-          <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
-          <div>Loading loans...</div>
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="w-20 h-20 mx-auto border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" aria-hidden="true"></div>
+            <div className="mt-3 text-gray-600">Loading loans...</div>
+          </div>
         </div>
+      ) : (
+        <>
+          <div className="overflow-x-auto bg-white border rounded-lg">
+            <table className="min-w-full table-very-small">
+              <thead>
+                <tr>
+                  <th className="py-3 px-4 text-left border-b">User</th>
+                  <th className="py-3 px-4 text-left border-b">Phone</th>
+                  <th className="py-3 px-4 text-left border-b">Amount</th>
+                  <th className="py-3 px-4 text-left border-b">Issued</th>
+                  <th className="py-3 px-4 text-left border-b">Deadline</th>
+                  <th className="py-3 px-4 text-left border-b">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedLoans.map(l => (
+                  <tr key={l.id} className="hover:bg-gray-50">
+                    <td className="py-3 px-4 border-b">{l.username}</td>
+                    <td className="py-3 px-4 border-b">{l.phone_number}</td>
+                    <td className="py-3 px-4 border-b">{formatNumber(l.amount)}</td>
+                    <td className="py-3 px-4 border-b">{l.issued_date ? new Date(l.issued_date).toLocaleString() : ''}</td>
+                    <td className="py-3 px-4 border-b">{l.deadline ? new Date(l.deadline).toLocaleString() : ''}</td>
+                    <td className="py-3 px-4 border-b relative" ref={openDropdownId === l.id ? dropdownRef : null}>
+                      <button onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === l.id ? null : l.id); }} className="p-2 rounded hover:bg-gray-100">
+                        <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                      </button>
+                      {openDropdownId === l.id && (
+                        <div className="absolute right-2 top-10 w-48 bg-white border rounded-md shadow-md z-20" onClick={(e) => e.stopPropagation()}>
+                          <button onClick={() => openEditModal(l.id)} className="w-full text-left px-4 py-2 hover:bg-gray-50">Edit</button>
+                          <button onClick={() => navigate(`/dashboard/payment-schedule/${l.id}`)} className="w-full text-left px-4 py-2 text-blue-600 hover:bg-gray-50">Payment Schedule</button>
+                          {/* navigate to /dashboard/payment/:id with user query param */}
+                          <button onClick={() => navigate(`/dashboard/payment/${l.id}?user=${l.user_id || ''}`)} className="w-full text-left px-4 py-2 hover:bg-gray-50">View Payments</button>
+                          <button onClick={() => handleDelete(l.id)} className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">Delete</button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {paginatedLoans.length === 0 && (<tr><td colSpan={6} className="py-6 text-center text-gray-500">No loans found</td></tr>)}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4 flex justify-between items-center">
+            <div className="text-sm text-gray-600">Showing {(page - 1) * rowsPerPage + 1} - {Math.min(page * rowsPerPage, filteredLoans.length)} of {filteredLoans.length}</div>
+            <div className="flex items-center space-x-2">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 border rounded disabled:opacity-50">Prev</button>
+              <span>Page {page} of {pageCount}</span>
+              <button onClick={() => setPage(p => Math.min(pageCount, p + 1))} disabled={page === pageCount} className="px-3 py-1 border rounded disabled:opacity-50">Next</button>
+            </div>
+          </div>
+        </>
       )}
-
-      <div className="overflow-x-auto bg-white border rounded-lg">
-        <table className="min-w-full table-very-small">
-          <thead>
-            <tr>
-              <th className="py-3 px-4 text-left border-b">User</th>
-              <th className="py-3 px-4 text-left border-b">Phone</th>
-              <th className="py-3 px-4 text-left border-b">Amount</th>
-              <th className="py-3 px-4 text-left border-b">Issued</th>
-              <th className="py-3 px-4 text-left border-b">Deadline</th>
-              <th className="py-3 px-4 text-left border-b">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedLoans.map(l => (
-              <tr key={l.id} className="hover:bg-gray-50">
-                <td className="py-3 px-4 border-b">{l.username}</td>
-                <td className="py-3 px-4 border-b">{l.phone_number}</td>
-                <td className="py-3 px-4 border-b">{formatNumber(l.amount)}</td>
-                <td className="py-3 px-4 border-b">{l.issued_date ? new Date(l.issued_date).toLocaleString() : ''}</td>
-                <td className="py-3 px-4 border-b">{l.deadline ? new Date(l.deadline).toLocaleString() : ''}</td>
-                <td className="py-3 px-4 border-b relative" ref={openDropdownId === l.id ? dropdownRef : null}>
-                  <button onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === l.id ? null : l.id); }} className="p-2 rounded hover:bg-gray-100">
-                    <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                  </button>
-                  {openDropdownId === l.id && (
-                    <div className="absolute right-2 top-10 w-48 bg-white border rounded-md shadow-md z-20" onClick={(e) => e.stopPropagation()}>
-                      <button onClick={() => openEditModal(l.id)} className="w-full text-left px-4 py-2 hover:bg-gray-50">Edit</button>
-                      <button onClick={() => navigate(`/dashboard/payment-schedule/${l.id}`)} className="w-full text-left px-4 py-2 text-blue-600 hover:bg-gray-50">Payment Schedule</button>
-                      {/* navigate to /dashboard/payment/:id with user query param */}
-                      <button onClick={() => navigate(`/dashboard/payment/${l.id}?user=${l.user_id || ''}`)} className="w-full text-left px-4 py-2 hover:bg-gray-50">View Payments</button>
-                      <button onClick={() => handleDelete(l.id)} className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">Delete</button>
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-            {paginatedLoans.length === 0 && (<tr><td colSpan={5} className="py-6 text-center text-gray-500">No loans found</td></tr>)}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="mt-4 flex justify-between items-center">
-        <div className="text-sm text-gray-600">Showing {(page - 1) * rowsPerPage + 1} - {Math.min(page * rowsPerPage, filteredLoans.length)} of {filteredLoans.length}</div>
-        <div className="flex items-center space-x-2">
-          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 border rounded disabled:opacity-50">Prev</button>
-          <span>Page {page} of {pageCount}</span>
-          <button onClick={() => setPage(p => Math.min(pageCount, p + 1))} disabled={page === pageCount} className="px-3 py-1 border rounded disabled:opacity-50">Next</button>
-        </div>
-      </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
