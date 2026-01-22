@@ -10,6 +10,7 @@ import Penalties from './Penalties';
 import Savings from './Savings';
 import Profile from './Profile';
 import Distribution from './Distribution';
+import UserDetail from './UserDetail';
 import { Routes, Route, useLocation } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -41,6 +42,7 @@ const Dashboard = () => {
           <Routes>
             <Route path="/" element={<DashboardOverview />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/users/:userId" element={<UserDetail />} />
             <Route path="/savings" element={<Savings />} />
             <Route path="/loans" element={<Loans />} />
             <Route path="/payment/:id" element={<Payment />} />

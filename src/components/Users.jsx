@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useToast } from './Toast';
 
 const mockUsers = [
@@ -505,10 +506,10 @@ const Users = () => {
       <div className="overflow-x-auto bg-white border rounded-lg">
         <table className="min-w-full table-very-small">
           <thead>
-              <tr>
+                <tr>
                 <th className="py-3 px-4 text-left border-b">Name</th>
-                <th className="py-3 px-4 text-left border-b">Total Saving</th>
-                <th className="py-3 px-4 text-left border-b">Original Saving</th>
+                <th className="py-3 px-4 text-right border-b">Total Saving</th>
+                <th className="py-3 px-4 text-right border-b">Original Saving</th>
                 <th className="py-3 px-4 text-left border-b">Phone</th>
                 <th className="py-3 px-4 text-left border-b">Status</th>
                 <th className="py-3 px-4 text-left border-b">Actions</th>
@@ -525,11 +526,15 @@ const Users = () => {
                 </td>
               </tr>
             ) : (
-              paginatedUsers.map(user => (
+                paginatedUsers.map(user => (
                 <tr key={user.id} className="hover:bg-gray-50">
-                  <td className="py-3 px-4 border-b">{user.name}</td>
-                  <td className="py-3 px-4 border-b">{typeof user.total_saving === 'number' ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(user.total_saving) : '—'}</td>
-                  <td className="py-3 px-4 border-b">{(typeof user.original_saving === 'number' || (typeof user.original_saving === 'string' && !isNaN(user.original_saving))) ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Number(user.original_saving)) : '—'}</td>
+                  <td className="py-3 px-4 border-b">
+                    <Link to={`/dashboard/users/${user.id}`} className="text-blue-600 hover:underline">
+                      {user.name}
+                    </Link>
+                  </td>
+                  <td className="py-3 px-4 border-b text-right">{typeof user.total_saving === 'number' ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(user.total_saving) : '—'}</td>
+                  <td className="py-3 px-4 border-b text-right">{(typeof user.original_saving === 'number' || (typeof user.original_saving === 'string' && !isNaN(user.original_saving))) ? <span className="font-bold text-green-600">{new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Number(user.original_saving))}</span> : '—'}</td>
                   <td className="py-3 px-4 border-b">{user.phone}</td>
                   <td className="py-3 px-4 border-b">{user.status}</td>
                   <td className="py-3 px-4 border-b relative" ref={openDropdownId === user.id ? dropdownRef : null}>
