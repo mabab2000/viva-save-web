@@ -311,11 +311,7 @@ const Login = () => {
                   ></div>
                   
                   {/* Debug info - remove in production */}
-                  <div className="mt-2 text-xs text-gray-500 text-center">
-                    Client ID: {GOOGLE_OAUTH_CONFIG.client_id?.substring(0, 20)}...
-                    <br />
-                    Current Origin: {window.location.origin}
-                  </div>
+                 
                 </div>
               ) : (
                 <button 
