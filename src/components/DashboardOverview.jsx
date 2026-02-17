@@ -13,6 +13,7 @@ const DashboardOverview = () => {
 
   // live stats received from websocket
   const [liveStats, setLiveStats] = useState({
+    total_original_saving: null,
     total_savings: null,
     total_loans: null,
     total_penalties: null,
@@ -54,6 +55,11 @@ const DashboardOverview = () => {
   // stats cards derived from liveStats with loading state
   const statsCards = [
     { 
+      label: 'Total Original Savings', 
+      value: isLoadingStats ? null : formatNumber(liveStats.total_original_saving), 
+      changeType: 'positive' 
+    },
+    { 
       label: 'Total Savings', 
       value: isLoadingStats ? null : formatNumber(liveStats.total_savings), 
       changeType: 'positive' 
@@ -76,6 +82,7 @@ const DashboardOverview = () => {
   ];
 
   const cardLinks = {
+    'Total Original Savings': '/dashboard/savings',
     'Total Savings': '/dashboard/savings',
     'Total Loans': '/dashboard/loans',
     'Total Penalties': '/dashboard/penalties',
@@ -143,7 +150,7 @@ const DashboardOverview = () => {
      
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         {statsCards.map((stat, index) => (
           <Link key={index} to={cardLinks[stat.label] || '#'} className="block bg-white rounded-xl shadow-sm border border-b border-blue-600 p-6 hover:shadow-md transition">
             <div className="flex items-center justify-between">
