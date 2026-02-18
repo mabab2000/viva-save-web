@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './Toast';
 
@@ -46,6 +46,8 @@ const Loans = () => {
   );
   const paginatedLoans = filteredLoans.slice((page - 1) * rowsPerPage, page * rowsPerPage);
   const pageCount = Math.max(1, Math.ceil(filteredLoans.length / rowsPerPage));
+
+  const loansTotal = useMemo(() => filteredLoans.reduce((s, l) => s + (Number(l.amount || 0)), 0), [filteredLoans]);
 
   const openAddModal = () => { setEditId(null); setFormData({ borrower: '', amount: '', status: 'Pending', date: '' }); setIsModalOpen(true); };
   const openEditModal = (id) => { const l = loans.find(x => x.id === id); setEditId(id); setFormData({ borrower: l.borrower, amount: l.amount, status: l.status, date: l.date }); setIsModalOpen(true); setOpenDropdownId(null); };
@@ -186,6 +188,17 @@ const Loans = () => {
                   </tr>
                 ))}
                 {paginatedLoans.length === 0 && (<tr><td colSpan={6} className="py-6 text-center text-gray-500">No loans found</td></tr>)}
+
+                {filteredLoans.length > 0 && (
+                  <tr className="bg-gray-50 font-semibold">
+                    <td className="py-3 px-4 border-t">Total</td>
+                    <td className="py-3 px-4 border-t">&nbsp;</td>
+                    <td className="py-3 px-4 border-t">{formatNumber(loansTotal)}</td>
+                    <td className="py-3 px-4 border-t">&nbsp;</td>
+                    <td className="py-3 px-4 border-t">&nbsp;</td>
+                    <td className="py-3 px-4 border-t">&nbsp;</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

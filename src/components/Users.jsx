@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useToast } from './Toast';
 
@@ -112,6 +112,14 @@ const Users = () => {
   );
   const paginatedUsers = filteredUsers.slice((page - 1) * rowsPerPage, page * rowsPerPage);
   const pageCount = Math.max(1, Math.ceil(filteredUsers.length / rowsPerPage));
+
+  const usersTotals = useMemo(() => {
+    return filteredUsers.reduce((acc, u) => {
+      acc.total_saving += Number(u.total_saving || 0);
+      acc.original_saving += Number(u.original_saving || 0);
+      return acc;
+    }, { total_saving: 0, original_saving: 0 });
+  }, [filteredUsers]);
 
   const openAddModal = () => {
     setEditId(null);
@@ -564,6 +572,17 @@ const Users = () => {
               {paginatedUsers.length === 0 && (
                 <tr>
                   <td colSpan={6} className="py-6 text-center text-gray-500">No users found</td>
+                </tr>
+              )}
+
+              {filteredUsers.length > 0 && (
+                <tr className="bg-gray-50 font-semibold">
+                  <td className="py-3 px-4 border-t">Total</td>
+                  <td className="py-3 px-4 border-t text-right">{new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(usersTotals.total_saving)}</td>
+                  <td className="py-3 px-4 border-t text-right"><span className="font-bold text-green-600">{new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(usersTotals.original_saving)}</span></td>
+                  <td className="py-3 px-4 border-t tex-lef">&nbsp;</td>
+                  <td className="py-3 px-4 border-t text-right">&nbsp;</td>
+                  <td className="py-3 px-4 border-t text-right">&nbsp;</td>
                 </tr>
               )}
             </tbody>

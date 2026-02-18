@@ -114,6 +114,15 @@ const Distribution = () => {
     return years.some(y => String(r.totals[y] || '').includes(q));
   });
 
+  // Totals per year for the (filtered) distribution rows
+  const distributionTotals = useMemo(() => {
+    const totals = {};
+    years.forEach(y => {
+      totals[y] = filtered.reduce((s, r) => s + (Number(r.totals[y] || 0)), 0);
+    });
+    return totals;
+  }, [filtered, years]);
+
   const pageCount = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
   const paged = filtered.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
@@ -128,6 +137,8 @@ const Distribution = () => {
 
   const payUsingSavingPageCount = Math.max(1, Math.ceil(payUsingSavingFiltered.length / payUsingSavingRowsPerPage));
   const payUsingSavingPaged = payUsingSavingFiltered.slice((payUsingSavingPage - 1) * payUsingSavingRowsPerPage, payUsingSavingPage * payUsingSavingRowsPerPage);
+
+  const payUsingSavingTotal = useMemo(() => payUsingSavingFiltered.reduce((s, r) => s + (Number(r.amount || 0)), 0), [payUsingSavingFiltered]);
 
   const fmt = (v) => new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(v);
 
@@ -395,7 +406,17 @@ const Distribution = () => {
 
                   {paged.length === 0 && (
                     <tr>
-                      <td colSpan={1 + years.length} className="py-6 text-center text-gray-500">No records found</td>
+                      <td colSpan={years.length + 2} className="py-6 text-center text-gray-500">No records found</td>
+                    </tr>
+                  )}
+
+                  {filtered.length > 0 && (
+                    <tr className="bg-gray-50 font-semibold">
+                      <td className="py-3 px-4 border-t">Total</td>
+                      {years.map(y => (
+                        <td key={y} className="py-3 px-4 border-t text-right">{fmt(distributionTotals[y] || 0)}</td>
+                      ))}
+                      <td className="py-3 px-4 border-t text-right">&nbsp;</td>
                     </tr>
                   )}
                 </tbody>
@@ -506,6 +527,16 @@ const Distribution = () => {
                   {payUsingSavingPaged.length === 0 && (
                     <tr>
                       <td colSpan={5} className="py-6 text-center text-gray-500">No pay using saving records found</td>
+                    </tr>
+                  )}
+
+                  {payUsingSavingFiltered.length > 0 && (
+                    <tr className="bg-gray-50 font-semibold">
+                      <td className="py-3 px-4 border-t">Total</td>
+                      <td className="py-3 px-4 border-t text-right">{fmt(payUsingSavingTotal)}</td>
+                      <td className="py-3 px-4 border-t">&nbsp;</td>
+                      <td className="py-3 px-4 border-t">&nbsp;</td>
+                      <td className="py-3 px-4 border-t text-right">&nbsp;</td>
                     </tr>
                   )}
                 </tbody>

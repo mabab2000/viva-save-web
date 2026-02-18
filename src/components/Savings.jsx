@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useToast } from './Toast';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -84,6 +84,8 @@ const Savings = () => {
   });
   const paginatedSavings = filteredSavings.slice((page - 1) * rowsPerPage, page * rowsPerPage);
   const pageCount = Math.max(1, Math.ceil(filteredSavings.length / rowsPerPage));
+
+  const savingsTotal = useMemo(() => filteredSavings.reduce((s, it) => s + (Number(it.amount || 0)), 0), [filteredSavings]);
 
   const exportRows = filteredSavings.map((saving, index) => ({
     number: index + 1,
@@ -534,6 +536,16 @@ const Savings = () => {
 
                 {!loading && paginatedSavings.length === 0 && (
                   <tr><td colSpan={5} className="py-6 text-center text-gray-500">No savings found</td></tr>
+                )}
+
+                {filteredSavings.length > 0 && (
+                  <tr className="bg-gray-50 font-semibold">
+                    <td className="py-2 px-3 border-t">Total</td>
+                    <td className="py-2 px-3 border-t">&nbsp;</td>
+                    <td className="py-2 px-3 border-t">{formatNumber(savingsTotal)}</td>
+                    <td className="py-2 px-3 border-t">&nbsp;</td>
+                    <td className="py-2 px-3 border-t">&nbsp;</td>
+                  </tr>
                 )}
               </tbody>
             </table>
