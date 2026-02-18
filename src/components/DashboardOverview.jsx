@@ -55,7 +55,7 @@ const DashboardOverview = () => {
   // stats cards derived from liveStats with loading state
   const statsCards = [
     { 
-      label: 'Total Original Savings', 
+      label: 'Current saving', 
       value: isLoadingStats ? null : formatNumber(liveStats.total_original_saving), 
       changeType: 'positive' 
     },
