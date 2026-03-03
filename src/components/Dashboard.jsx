@@ -8,7 +8,7 @@ import Payment from './Payment';
 import PaymentSchedule from './PaymentSchedule';
 import Penalties from './Penalties';
 import Savings from './Savings';
-import Profile from './Profile';
+
 import Distribution from './Distribution';
 import UserDetail from './UserDetail';
 import { Routes, Route, useLocation } from 'react-router-dom';
@@ -49,7 +49,6 @@ const Dashboard = () => {
             <Route path="/payment-schedule/:loanId" element={<PaymentSchedule />} />
             <Route path="/penalties" element={<Penalties />} />
             <Route path="/distribution" element={<Distribution />} />
-            <Route path="/profile" element={<Profile />} />
           </Routes>
         </main>
       </div>
