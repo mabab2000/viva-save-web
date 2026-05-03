@@ -29,6 +29,7 @@ const Users = () => {
   const [showSavingModal, setShowSavingModal] = useState(false);
   const [savingTargetUser, setSavingTargetUser] = useState(null);
   const [savingAmount, setSavingAmount] = useState('');
+  const [savingDate, setSavingDate] = useState('');
   const [savingLoading, setSavingLoading] = useState(false);
   // Add Distribution modal states
   const [showDistributionModal, setShowDistributionModal] = useState(false);
@@ -120,6 +121,34 @@ const Users = () => {
       return acc;
     }, { total_saving: 0, original_saving: 0 });
   }, [filteredUsers]);
+
+  // Helper function to get last day of month
+  const getLastDayOfMonth = (year, month) => {
+    return new Date(year, month + 1, 0).getDate();
+  };
+
+  // Generate date options for the current year (last day of each month)
+  const generateLastDayOptions = () => {
+    const currentYear = new Date().getFullYear();
+    const options = [];
+    
+    for (let month = 0; month < 12; month++) {
+      const lastDay = getLastDayOfMonth(currentYear, month);
+      const date = new Date(currentYear, month, lastDay);
+      const dateString = date.toISOString().split('T')[0];
+      const monthName = date.toLocaleDateString('en-US', { month: 'long' });
+      
+      options.push({
+        value: dateString,
+        label: `${monthName} ${lastDay}, ${currentYear}`,
+        date: date
+      });
+    }
+    
+    return options;
+  };
+
+  const lastDayOptions = generateLastDayOptions();
 
   const openAddModal = () => {
     setEditId(null);
@@ -281,6 +310,7 @@ const Users = () => {
     setOpenDropdownId(null);
     setSavingTargetUser(user);
     setSavingAmount('');
+    setSavingDate('');
     setShowSavingModal(true);
   };
 
@@ -302,13 +332,18 @@ const Users = () => {
 
   // Add saving to user
   const confirmAddSaving = async () => {
-    if (!savingTargetUser || !savingAmount) return;
+    if (!savingTargetUser || !savingAmount || !savingDate) return;
     
     setSavingLoading(true);
     try {
+      // Create date string with time for the API
+      const selectedDate = new Date(savingDate);
+      selectedDate.setHours(10, 30, 0); // Set to 10:30:00 as per request format
+      
       const payload = {
         user_id: savingTargetUser.id,
-        amount: parseFloat(savingAmount)
+        amount: parseFloat(savingAmount),
+        date: selectedDate.toISOString().slice(0, 19) // Format: "2026-05-03T10:30:00"
       };
       
       const res = await fetch('https://saving-api.mababa.app/api/saving', {
@@ -328,6 +363,7 @@ const Users = () => {
       setShowSavingModal(false);
       setSavingTargetUser(null);
       setSavingAmount('');
+      setSavingDate('');
     } catch (err) {
       console.error(err);
       const msg = err.message || 'Failed to add saving';
@@ -670,12 +706,28 @@ const Users = () => {
                 step="0.01"
               />
             </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
+              <select
+                value={savingDate}
+                onChange={(e) => setSavingDate(e.target.value)}
+                className="w-full border px-3 py-2 rounded-lg"
+              >
+                <option value="">Select date here</option>
+                {lastDayOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="flex justify-end space-x-2">
               <button 
                 onClick={() => { 
                   setShowSavingModal(false); 
                   setSavingTargetUser(null); 
                   setSavingAmount(''); 
+                  setSavingDate('');
                 }} 
                 className="px-4 py-2 border rounded"
               >
@@ -683,7 +735,7 @@ const Users = () => {
               </button>
               <button 
                 onClick={confirmAddSaving} 
-                disabled={savingLoading || !savingAmount}
+                disabled={savingLoading || !savingAmount || !savingDate}
                 className="px-4 py-2 bg-green-600 text-white rounded flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {savingLoading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>}
