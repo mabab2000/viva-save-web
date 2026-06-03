@@ -75,7 +75,7 @@ const Users = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch('https://saving-api.mababa.app/api/users', { signal: controller.signal });
+        const res = await fetch('https://viva-api-366k.onrender.com/api/users', { signal: controller.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (aborted) return;
@@ -186,7 +186,7 @@ const Users = () => {
       };
       try {
         setSaveLoading(true);
-        const res = await fetch(`https://saving-api.mababa.app/api/users/${editId}`, {
+        const res = await fetch(`https://viva-api-366k.onrender.com/api/users/${editId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -226,7 +226,7 @@ const Users = () => {
           password: formData.password,
           confirm_password: formData.confirm_password
         };
-        const res = await fetch('https://saving-api.mababa.app/api/signup', {
+        const res = await fetch('https://viva-api-366k.onrender.com/api/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -282,7 +282,7 @@ const Users = () => {
         return;
       }
 
-      const res = await fetch(`https://saving-api.mababa.app/api/users/${id}`, {
+      const res = await fetch(`https://viva-api-366k.onrender.com/api/users/${id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -346,7 +346,7 @@ const Users = () => {
         date: selectedDate.toISOString().slice(0, 19) // Format: "2026-05-03T10:30:00"
       };
       
-      const res = await fetch('https://saving-api.mababa.app/api/saving', {
+      const res = await fetch('https://viva-api-366k.onrender.com/api/saving', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -385,7 +385,7 @@ const Users = () => {
         deadline: new Date(loanDeadline).toISOString()
       };
 
-      const res = await fetch('https://saving-api.mababa.app/api/loan', {
+      const res = await fetch('https://viva-api-366k.onrender.com/api/loan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -441,7 +441,7 @@ const Users = () => {
         year
       };
 
-      const res = await fetch('https://saving-api.mababa.app/api/distribution', {
+      const res = await fetch('https://viva-api-366k.onrender.com/api/distribution', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -491,7 +491,7 @@ const Users = () => {
         description: payDescription || `Pay ${amount} on loan using saving`
       };
 
-      const res = await fetch('https://saving-api.mababa.app/api/pay-loan-using-saving', {
+      const res = await fetch('https://viva-api-366k.onrender.com/api/pay-loan-using-saving', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -896,7 +896,7 @@ const Users = () => {
                   setPenaltyLoading(true);
                   try {
                     const payload = { user_id: penaltyTargetUser.id, reason: penaltyReason, amount: amt, status: 'unpaid' };
-                    const res = await fetch('https://saving-api.mababa.app/api/penalty', {
+                    const res = await fetch('https://viva-api-366k.onrender.com/api/penalty', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify(payload)

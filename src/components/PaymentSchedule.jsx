@@ -261,7 +261,7 @@ const PaymentSchedule = () => {
       try {
         setLoading(true);
         // Fetch all loans and find the specific one by ID
-        const res = await fetch('https://saving-api.mababa.app/api/loans');
+        const res = await fetch('https://viva-api-366k.onrender.com/api/loans');
         
         if (!res.ok) {
           throw new Error(`Failed to fetch loans: ${res.status}`);
@@ -278,7 +278,7 @@ const PaymentSchedule = () => {
         
         // Fetch loan status to get payment information
         try {
-          const statusRes = await fetch(`https://saving-api.mababa.app/api/loan/${loanId}/status`);
+          const statusRes = await fetch(`https://viva-api-366k.onrender.com/api/loan/${loanId}/status`);
           let totalPaid = 0;
           let fetchedStatus = null;
           

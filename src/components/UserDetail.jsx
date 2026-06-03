@@ -74,8 +74,8 @@ const UserDetail = () => {
     const fetchSavingsAndLoans = async () => {
       try {
         const [sRes, lRes] = await Promise.all([
-          fetch(`https://saving-api.mababa.app/api/savings/${userId}`, { signal: controller.signal }),
-          fetch(`https://saving-api.mababa.app/api/loans/${userId}`, { signal: controller.signal })
+          fetch(`https://viva-api-366k.onrender.com/api/savings/${userId}`, { signal: controller.signal }),
+          fetch(`https://viva-api-366k.onrender.com/api/loans/${userId}`, { signal: controller.signal })
         ]);
 
         const sJson = sRes.ok ? await sRes.json() : null;
@@ -116,7 +116,7 @@ const UserDetail = () => {
 
         // fetch pay-using-savings for this user
         try {
-          const pRes = await fetch(`https://saving-api.mababa.app/api/pay-loan-using-savings/${userId}`, { signal: controller.signal });
+          const pRes = await fetch(`https://viva-api-366k.onrender.com/api/pay-loan-using-savings/${userId}`, { signal: controller.signal });
           const pJson = pRes.ok ? await pRes.json() : null;
           if (pJson && Array.isArray(pJson)) {
             setPayUsingSavingData(pJson.map(p => ({
@@ -137,7 +137,7 @@ const UserDetail = () => {
 
         // fetch distributions for this user
         try {
-          const dRes = await fetch(`https://saving-api.mababa.app/api/distributions/${userId}`, { signal: controller.signal });
+          const dRes = await fetch(`https://viva-api-366k.onrender.com/api/distributions/${userId}`, { signal: controller.signal });
           const dJson = dRes.ok ? await dRes.json() : null;
           if (dJson && Array.isArray(dJson)) {
             setDistributionData(dJson.map(d => ({

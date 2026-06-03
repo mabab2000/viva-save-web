@@ -89,7 +89,7 @@ const DashboardOverview = () => {
     'Members': '/dashboard/users'
   };
 
-  const WS_URL = 'wss://saving-api.mababa.app/ws/stats';
+  const WS_URL = 'wss://viva-api-366k.onrender.com/ws/stats';
 
   const connect = () => {
     try {

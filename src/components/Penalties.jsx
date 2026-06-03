@@ -39,7 +39,7 @@ const Penalties = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch('https://saving-api.mababa.app/api/penalties', { signal: controller.signal });
+        const res = await fetch('https://viva-api-366k.onrender.com/api/penalties', { signal: controller.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const body = await res.json();
         if (aborted) return;
@@ -49,7 +49,7 @@ const Penalties = () => {
 
         // try to fetch users to resolve user_id -> username
         try {
-          const ures = await fetch('https://saving-api.mababa.app/api/users');
+          const ures = await fetch('https://viva-api-366k.onrender.com/api/users');
           if (ures.ok) {
             const usersBody = await ures.json();
             const map = {};

@@ -87,7 +87,7 @@ const Header = ({ sidebarOpen, onToggleSidebar }) => {
 Header.fetchProfile = async function setHeaderProfile(setProfile) {
   try {
     const profileId = window.localStorage.getItem('profileId') || DEFAULT_PROFILE_ID;
-    const res = await fetch(`https://saving-api.mababa.app/api/profile/${profileId}`);
+    const res = await fetch(`https://viva-api-366k.onrender.com/api/profile/${profileId}`);
     if (!res.ok) return;
     const data = await res.json();
     setProfile(data);

@@ -30,7 +30,7 @@ const Team = () => {
       setApiLoading(true);
       setApiError(null);
       try {
-        const res = await fetch('https://saving-api.mababa.app/api/members', { signal: controller.signal });
+        const res = await fetch('https://viva-api-366k.onrender.com/api/members', { signal: controller.signal });
         if (!res.ok) {
           const errorText = await res.text().catch(() => 'Unknown error');
           throw new Error(`HTTP ${res.status} ${res.statusText}: ${errorText}`);

@@ -21,7 +21,7 @@ const MonthlySavingsCard = ({ year }) => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch('https://saving-api.mababa.app/api/savings', { signal: controller.signal });
+        const res = await fetch('https://viva-api-366k.onrender.com/api/savings', { signal: controller.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const body = await res.json();
         const items = (body.savings || []);

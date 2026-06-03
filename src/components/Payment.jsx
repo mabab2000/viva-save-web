@@ -33,7 +33,7 @@ export default function Payment() {
     setError(null);
     try {
       const opts = signal ? { signal } : {};
-      const res = await fetch(`https://saving-api.mababa.app/api/loan-payments/${id}`, opts);
+      const res = await fetch(`https://viva-api-366k.onrender.com/api/loan-payments/${id}`, opts);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const body = await res.json();
       setTotalAmount(body.total_amount ?? null);
@@ -69,7 +69,7 @@ export default function Payment() {
     }
     setAdding(true);
     try {
-      const res = await fetch('https://saving-api.mababa.app/api/loan-payment', {
+      const res = await fetch('https://viva-api-366k.onrender.com/api/loan-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userIdFromQuery, loan_id: id, amount: amt })

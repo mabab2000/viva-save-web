@@ -125,7 +125,7 @@ const Savings = () => {
         const nowIso = new Date().toISOString();
         const createdAtToSend = formData.date ? new Date(formData.date).toISOString() : nowIso;
         // send amount and created_at (as provided or now)
-        const res = await fetch(`https://saving-api.mababa.app/api/saving/${editId}`, {
+        const res = await fetch(`https://viva-api-366k.onrender.com/api/saving/${editId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ amount: amountValue, created_at: createdAtToSend })
@@ -187,7 +187,7 @@ const Savings = () => {
     if (!id) return;
     setDeleteLoading(true);
     try {
-      const res = await fetch(`https://saving-api.mababa.app/api/saving/${id}`, {
+      const res = await fetch(`https://viva-api-366k.onrender.com/api/saving/${id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -219,7 +219,7 @@ const Savings = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch('https://saving-api.mababa.app/api/savings', { signal: controller.signal });
+        const res = await fetch('https://viva-api-366k.onrender.com/api/savings', { signal: controller.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const body = await res.json();
         if (aborted) return;
