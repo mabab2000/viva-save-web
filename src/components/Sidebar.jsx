@@ -66,12 +66,19 @@ const Sidebar = ({ isOpen, activeSection, onSectionChange }) => {
       <div className={`${base} ${mobileTransform} w-64 sm:translate-x-0 ${smWidth}`}> 
       {/* Logo Section */}
       <div className="flex items-center p-4 border-b border-blue-600">
-        <div className="w-10 h-12 rounded-lg overflow-hidden bg-blue-600 flex items-center justify-center">
-          <img src="/logo.png" alt="SaveTracker" className="w-full h-full object-cover" onError={(e)=>{e.target.style.display='none'}} />
+        <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7">
+            <circle cx="20" cy="20" r="18" fill="white" fillOpacity="0.15"/>
+            <path d="M20 8C13.373 8 8 13.373 8 20s5.373 12 12 12 12-5.373 12-12S26.627 8 20 8z" fill="white" fillOpacity="0.2"/>
+            <path d="M14 22c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="20" cy="16" r="3" fill="white"/>
+            <path d="M12 28h16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+            <path d="M17 25l3-3 3 3" stroke="#93C5FD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
         {isOpen && (
           <div className="ml-3">
-            <h2 className="text-xl font-bold text-gray-800">Alphonse</h2>
+            <h2 className="text-xl font-bold text-blue-700 tracking-wide">Viva Intiti</h2>
             <p className="text-xs text-gray-500">Savings Management</p>
           </div>
         )}
