@@ -16,7 +16,7 @@ const PaymentSchedule = () => {
   const [loanStatus, setLoanStatus] = useState(null);
 
   // Interest rate constant
-  const MONTHLY_INTEREST_RATE = 0.03; // 3%
+  const MONTHLY_INTEREST_RATE = 0.05; // 5%
 
   const calculatePaymentSchedule = (loanAmount, issuedDate, deadline, totalPaid = 0) => {
     const issued = new Date(issuedDate);
@@ -149,7 +149,7 @@ const PaymentSchedule = () => {
         payment.status || 'Pending'
       ]);
       
-      const tableHead = [['Month', 'Payment Date', 'Principal', 'Interest (3%)', 'Total Payment', 'Paid Amount', 'Remaining Balance', 'Status']];
+      const tableHead = [['Month', 'Payment Date', 'Principal', 'Interest (5%)', 'Total Payment', 'Paid Amount', 'Remaining Balance', 'Status']];
       
       // Calculate totals
       const totalInterest = schedule.reduce((sum, payment) => sum + payment.interest, 0);
@@ -238,7 +238,7 @@ const PaymentSchedule = () => {
       const monthlyPrincipal = schedule[0]?.principal || 0;
       const instructions = [
         `• Monthly principal payment: ${formatCurrency(monthlyPrincipal)}`,
-        '• Interest is calculated at 3% of the remaining loan balance each month',
+        '• Interest is calculated at 5% of the remaining loan balance each month',
         '• Make payments on or before the specified payment date to avoid additional charges'
       ];
       
@@ -437,7 +437,7 @@ const PaymentSchedule = () => {
         <div className="px-4 py-3 bg-gray-50 border-b">
           <h2 className="text-base font-semibold">Monthly Payment Schedule</h2>
           <p className="text-xs text-gray-600 mt-1">
-            Interest Rate: 3% monthly
+            Interest Rate: 5% monthly
           </p>
         </div>
         
@@ -448,7 +448,7 @@ const PaymentSchedule = () => {
                 <th className="py-2 px-3 text-left border-b font-medium text-sm">Month</th>
                 <th className="py-2 px-3 text-left border-b font-medium text-sm">Payment Date</th>
                 <th className="py-2 px-3 text-right border-b font-medium text-sm">Principal</th>
-                <th className="py-2 px-3 text-right border-b font-medium text-sm">Interest (3%)</th>
+                <th className="py-2 px-3 text-right border-b font-medium text-sm">Interest (5%)</th>
                 <th className="py-2 px-3 text-right border-b font-medium text-sm">Total Payment</th>
                 <th className="py-2 px-3 text-right border-b font-medium text-sm">Paid Amount</th>
                 <th className="py-2 px-3 text-right border-b font-medium text-sm">Remaining Balance</th>
@@ -516,7 +516,7 @@ const PaymentSchedule = () => {
         <h3 className="font-medium text-blue-800 mb-2 text-sm">Payment Instructions</h3>
         <div className="text-xs text-blue-700 space-y-1">
           <p>• Monthly principal payment: <strong>{formatCurrency(schedule[0]?.principal || 0)}</strong></p>
-          <p>• Interest is calculated at 3% of the remaining loan balance each month</p>
+          <p>• Interest is calculated at 5% of the remaining loan balance each month</p>
           <p>• Make payments on or before the specified payment date to avoid additional charges</p>
         </div>
       </div>

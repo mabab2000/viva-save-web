@@ -23,7 +23,7 @@ const Profile = () => {
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`https://viva-api-366k.onrender.com/api/profile/${profileId}`);
+      const res = await fetch(`https://saving-api.mababa.app/api/profile/${profileId}`);
       if (!res.ok) throw new Error(`Failed to fetch profile: ${res.status}`);
       const data = await res.json();
       setProfile(data);
@@ -50,7 +50,7 @@ const Profile = () => {
 
     setPasswordLoading(true);
     try {
-      const res = await fetch(`https://viva-api-366k.onrender.com/api/profile/${profileId}/password`, {
+      const res = await fetch(`https://saving-api.mababa.app/api/profile/${profileId}/password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
