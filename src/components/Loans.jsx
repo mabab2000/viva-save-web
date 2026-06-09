@@ -48,6 +48,7 @@ const Loans = () => {
   const pageCount = Math.max(1, Math.ceil(filteredLoans.length / rowsPerPage));
 
   const loansTotal = useMemo(() => filteredLoans.reduce((s, l) => s + (Number(l.amount || 0)), 0), [filteredLoans]);
+  const loansTotalPaid = useMemo(() => filteredLoans.reduce((s, l) => s + (Number(l.total_amount_paid || 0)), 0), [filteredLoans]);
 
   const openAddModal = () => { setEditId(null); setFormData({ borrower: '', amount: '', status: 'Pending', date: '' }); setIsModalOpen(true); };
   const openEditModal = (id) => { const l = loans.find(x => x.id === id); setEditId(id); setFormData({ borrower: l.borrower, amount: l.amount, status: l.status, date: l.date }); setIsModalOpen(true); setOpenDropdownId(null); };
@@ -107,6 +108,7 @@ const Loans = () => {
           username: x.username,
           phone_number: x.phone_number,
           amount: x.amount,
+          total_amount_paid: x.total_amount_paid,
           issued_date: x.issued_date,
           deadline: x.deadline,
           created_at: x.created_at,
@@ -158,6 +160,7 @@ const Loans = () => {
                   <th className="py-3 px-4 text-left border-b">User</th>
                   <th className="py-3 px-4 text-left border-b">Phone</th>
                   <th className="py-3 px-4 text-left border-b">Amount</th>
+                  <th className="py-3 px-4 text-left border-b">Amount Paid</th>
                   <th className="py-3 px-4 text-left border-b">Issued</th>
                   <th className="py-3 px-4 text-left border-b">Deadline</th>
                   <th className="py-3 px-4 text-left border-b">Actions</th>
@@ -168,9 +171,10 @@ const Loans = () => {
                   <tr key={l.id} className="hover:bg-gray-50">
                     <td className="py-3 px-4 border-b">{l.username}</td>
                     <td className="py-3 px-4 border-b">{l.phone_number}</td>
-                    <td className="py-3 px-4 border-b">{formatNumber(l.amount)}</td>
-                    <td className="py-3 px-4 border-b">{l.issued_date ? new Date(l.issued_date).toLocaleString() : ''}</td>
-                    <td className="py-3 px-4 border-b">{l.deadline ? new Date(l.deadline).toLocaleString() : ''}</td>
+                    <td className="py-3 px-4 border-b font-bold">{formatNumber(l.amount)}</td>
+                    <td className="py-3 px-4 border-b font-semibold text-green-600">{formatNumber(l.total_amount_paid)}</td>
+                    <td className="py-3 px-4 border-b">{l.issued_date ? new Date(l.issued_date).toLocaleDateString('en-GB') : ''}</td>
+                    <td className="py-3 px-4 border-b">{l.deadline ? new Date(l.deadline).toLocaleDateString('en-GB') : ''}</td>
                     <td className="py-3 px-4 border-b relative" ref={openDropdownId === l.id ? dropdownRef : null}>
                       <button onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === l.id ? null : l.id); }} className="p-2 rounded hover:bg-gray-100">
                         <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
@@ -187,13 +191,14 @@ const Loans = () => {
                     </td>
                   </tr>
                 ))}
-                {paginatedLoans.length === 0 && (<tr><td colSpan={6} className="py-6 text-center text-gray-500">No loans found</td></tr>)}
+                {paginatedLoans.length === 0 && (<tr><td colSpan={7} className="py-6 text-center text-gray-500">No loans found</td></tr>)}
 
                 {filteredLoans.length > 0 && (
                   <tr className="bg-gray-50 font-semibold">
                     <td className="py-3 px-4 border-t">Total</td>
                     <td className="py-3 px-4 border-t">&nbsp;</td>
                     <td className="py-3 px-4 border-t">{formatNumber(loansTotal)}</td>
+                    <td className="py-3 px-4 border-t">{formatNumber(loansTotalPaid)}</td>
                     <td className="py-3 px-4 border-t">&nbsp;</td>
                     <td className="py-3 px-4 border-t">&nbsp;</td>
                     <td className="py-3 px-4 border-t">&nbsp;</td>
