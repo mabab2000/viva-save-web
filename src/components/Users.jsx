@@ -122,33 +122,6 @@ const Users = () => {
     }, { total_saving: 0, original_saving: 0 });
   }, [filteredUsers]);
 
-  // Helper function to get last day of month
-  const getLastDayOfMonth = (year, month) => {
-    return new Date(year, month + 1, 0).getDate();
-  };
-
-  // Generate date options for the current year (last day of each month)
-  const generateLastDayOptions = () => {
-    const currentYear = new Date().getFullYear();
-    const options = [];
-    
-    for (let month = 0; month < 12; month++) {
-      const lastDay = getLastDayOfMonth(currentYear, month);
-      const date = new Date(currentYear, month, lastDay);
-      const dateString = date.toISOString().split('T')[0];
-      const monthName = date.toLocaleDateString('en-US', { month: 'long' });
-      
-      options.push({
-        value: dateString,
-        label: `${monthName} ${lastDay}, ${currentYear}`,
-        date: date
-      });
-    }
-    
-    return options;
-  };
-
-  const lastDayOptions = generateLastDayOptions();
 
   const openAddModal = () => {
     setEditId(null);
@@ -708,18 +681,12 @@ const Users = () => {
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
-              <select
+              <input
+                type="date"
                 value={savingDate}
                 onChange={(e) => setSavingDate(e.target.value)}
                 className="w-full border px-3 py-2 rounded-lg"
-              >
-                <option value="">Select date here</option>
-                {lastDayOptions.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
             <div className="flex justify-end space-x-2">
               <button 
