@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { APP_BASE_URL } from '../config';
 
 const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -21,7 +22,7 @@ const MonthlySavingsCard = ({ year }) => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch('https://viva-api-366k.onrender.com/api/savings', { signal: controller.signal });
+        const res = await fetch(`${APP_BASE_URL}/savings`, { signal: controller.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const body = await res.json();
         const items = (body.savings || []);

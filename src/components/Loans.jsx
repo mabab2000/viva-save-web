@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { APP_BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './Toast';
 
@@ -69,7 +70,7 @@ const Loans = () => {
     if (!deleteId) return;
     setDeleteLoading(true);
     try {
-      const res = await fetch(`https://viva-api-366k.onrender.com/api/loan/${deleteId}`, { method: 'DELETE' });
+      const res = await fetch(`${APP_BASE_URL}/loan/${deleteId}`, { method: 'DELETE' });
       if (!res.ok) {
         const txt = await res.text();
         throw new Error(txt || `HTTP ${res.status}`);
@@ -96,7 +97,7 @@ const Loans = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch('https://viva-api-366k.onrender.com/api/loans', { signal: controller.signal });
+        const res = await fetch(`${APP_BASE_URL}/loans`, { signal: controller.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const body = await res.json();
         if (aborted) return;

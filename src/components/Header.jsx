@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { APP_BASE_URL } from '../config';
 import { Link } from 'react-router-dom';
 
 // Default profile id - can be overridden by storing a real id in localStorage
@@ -87,7 +88,7 @@ const Header = ({ sidebarOpen, onToggleSidebar }) => {
 Header.fetchProfile = async function setHeaderProfile(setProfile) {
   try {
     const profileId = window.localStorage.getItem('profileId') || DEFAULT_PROFILE_ID;
-    const res = await fetch(`https://viva-api-366k.onrender.com/api/profile/${profileId}`);
+    const res = await fetch(`${APP_BASE_URL}/profile/${profileId}`);
     if (!res.ok) return;
     const data = await res.json();
     setProfile(data);

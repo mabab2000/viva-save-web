@@ -1,4 +1,8 @@
-export const APP_BASE_URL = import.meta.env.VITE_APP_BASE_URL || "https://viva-api-5d4f.onrender.com/api";
+export const APP_BASE_URL = (import.meta.env.VITE_APP_BASE_URL || "https://viva-api-5d4f.onrender.com/api").replace(/\/+$/, "");
+
+const statsWebSocketUrl = new URL('/ws/stats', APP_BASE_URL);
+statsWebSocketUrl.protocol = statsWebSocketUrl.protocol === 'https:' ? 'wss:' : 'ws:';
+export const STATS_WS_URL = statsWebSocketUrl.href;
 
 // Google OAuth Configuration
 export const GOOGLE_OAUTH_CONFIG = {

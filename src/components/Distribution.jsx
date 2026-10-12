@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { APP_BASE_URL } from '../config';
 
 const Distribution = () => {
   const [items, setItems] = useState([]);
@@ -25,7 +26,7 @@ const Distribution = () => {
       setPayUsingSavingLoading(true);
       try {
         // Fetch distributions
-        const res = await fetch('https://viva-api-366k.onrender.com/api/distributions', { signal: controller.signal });
+        const res = await fetch(`${APP_BASE_URL}/distributions`, { signal: controller.signal });
         if (!res.ok) throw new Error('Failed to fetch distributions');
         const data = await res.json();
         if (aborted) return;
@@ -47,7 +48,7 @@ const Distribution = () => {
 
       try {
         // Fetch pay using saving data
-        const payRes = await fetch('https://viva-api-366k.onrender.com/api/pay-loan-using-savings', { signal: controller.signal });
+        const payRes = await fetch(`${APP_BASE_URL}/pay-loan-using-savings`, { signal: controller.signal });
         if (!payRes.ok) throw new Error('Failed to fetch pay using saving data');
         const payData = await payRes.json();
         if (aborted) return;
@@ -180,7 +181,7 @@ const Distribution = () => {
     if (!amount || amount < 0) return;
     setEditLoading(true);
     try {
-      const res = await fetch(`https://viva-api-366k.onrender.com/api/distribution/${editRecord.id}`, {
+      const res = await fetch(`${APP_BASE_URL}/distribution/${editRecord.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount, created_at: new Date().toISOString() })
@@ -206,7 +207,7 @@ const Distribution = () => {
     if (!recordId) return;
     setDeleteLoadingId(recordId);
     try {
-      const res = await fetch(`https://viva-api-366k.onrender.com/api/distribution/${recordId}`, { method: 'DELETE', headers: { 'accept': 'application/json' } });
+      const res = await fetch(`${APP_BASE_URL}/distribution/${recordId}`, { method: 'DELETE', headers: { 'accept': 'application/json' } });
       const body = await res.json().catch(() => null);
       if (!res.ok) throw new Error((body && body.message) || `Failed: ${res.status}`);
 
@@ -243,7 +244,7 @@ const Distribution = () => {
     if (!amount || amount < 0) return;
     setEditPayUsingSavingLoading(true);
     try {
-      const res = await fetch(`https://viva-api-366k.onrender.com/api/pay-loan-using-saving/${editPayUsingSavingRecord.id}`, {
+      const res = await fetch(`${APP_BASE_URL}/pay-loan-using-saving/${editPayUsingSavingRecord.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -279,7 +280,7 @@ const Distribution = () => {
     if (!recordId) return;
     setDeletePayUsingSavingLoadingId(recordId);
     try {
-      const res = await fetch(`https://viva-api-366k.onrender.com/api/pay-loan-using-saving/${recordId}`, { 
+      const res = await fetch(`${APP_BASE_URL}/pay-loan-using-saving/${recordId}`, {
         method: 'DELETE', 
         headers: { 'accept': 'application/json' } 
       });

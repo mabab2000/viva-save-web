@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom'; // Ensure Link is imported consistently
 import MonthlySavingsCard from './MonthlySavingsCard';
+import { STATS_WS_URL } from '../config';
 
 const DashboardOverview = () => {
   const [savingsGoals] = useState([
@@ -89,7 +90,7 @@ const DashboardOverview = () => {
     'Members': '/dashboard/users'
   };
 
-  const WS_URL = 'wss://viva-api-366k.onrender.com/ws/stats';
+  const WS_URL = STATS_WS_URL;
 
   const connect = () => {
     try {

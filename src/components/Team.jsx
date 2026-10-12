@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { APP_BASE_URL } from '../config';
 
 const Team = () => {
   // base list of members, we'll duplicate when expanding to simulate more members
@@ -30,7 +31,7 @@ const Team = () => {
       setApiLoading(true);
       setApiError(null);
       try {
-        const res = await fetch('https://viva-api-366k.onrender.com/api/members', { signal: controller.signal });
+        const res = await fetch(`${APP_BASE_URL}/members`, { signal: controller.signal });
         if (!res.ok) {
           const errorText = await res.text().catch(() => 'Unknown error');
           throw new Error(`HTTP ${res.status} ${res.statusText}: ${errorText}`);

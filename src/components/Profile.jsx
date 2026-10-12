@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { APP_BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './Toast';
 
@@ -23,7 +24,7 @@ const Profile = () => {
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`https://saving-api.mababa.app/api/profile/${profileId}`);
+      const res = await fetch(`${APP_BASE_URL}/profile/${profileId}`);
       if (!res.ok) throw new Error(`Failed to fetch profile: ${res.status}`);
       const data = await res.json();
       setProfile(data);
@@ -50,7 +51,7 @@ const Profile = () => {
 
     setPasswordLoading(true);
     try {
-      const res = await fetch(`https://saving-api.mababa.app/api/profile/${profileId}/password`, {
+      const res = await fetch(`${APP_BASE_URL}/profile/${profileId}/password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

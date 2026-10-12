@@ -19,6 +19,8 @@ services:
         source: /*
         destination: /index.html
     envVars:
+      - key: VITE_APP_BASE_URL
+        value: https://viva-api-5d4f.onrender.com/api
       - key: NODE_ENV
         value: production
       - key: VITE_APP_NAME

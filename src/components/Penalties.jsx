@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { APP_BASE_URL } from '../config';
 
 const Penalties = () => {
   const [search, setSearch] = useState('');
@@ -39,7 +40,7 @@ const Penalties = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch('https://viva-api-366k.onrender.com/api/penalties', { signal: controller.signal });
+        const res = await fetch(`${APP_BASE_URL}/penalties`, { signal: controller.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const body = await res.json();
         if (aborted) return;
@@ -49,7 +50,7 @@ const Penalties = () => {
 
         // try to fetch users to resolve user_id -> username
         try {
-          const ures = await fetch('https://viva-api-366k.onrender.com/api/users');
+          const ures = await fetch(`${APP_BASE_URL}/users`);
           if (ures.ok) {
             const usersBody = await ures.json();
             const map = {};

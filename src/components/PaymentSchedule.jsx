@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { APP_BASE_URL } from '../config';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from './Toast';
 
@@ -67,7 +68,7 @@ const PaymentSchedule = () => {
     const load = async () => {
       try {
         setLoading(true);
-        const res = await fetch('https://viva-api-366k.onrender.com/api/loans', { signal: controller.signal });
+        const res = await fetch(`${APP_BASE_URL}/loans`, { signal: controller.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         const found = (data.loans || []).find((l) => l.id === loanId);

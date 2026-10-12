@@ -139,7 +139,10 @@ npm run build
 
 ### Environment Variables
 
+The frontend uses `https://viva-api-5d4f.onrender.com/api` by default. Copy `.env.example` to `.env` to configure it. Set `VITE_APP_BASE_URL` to a full API URL (including `/api`) to override the backend; dashboard WebSocket updates use the same host. Rebuild the frontend after changing this variable.
+
 ```env
+VITE_APP_BASE_URL=https://viva-api-5d4f.onrender.com/api
 VITE_APP_NAME=SaveTracker
 VITE_APP_VERSION=1.0.0
 NODE_ENV=production

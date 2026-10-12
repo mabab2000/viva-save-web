@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { APP_BASE_URL } from '../config';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const PageSizeOptions = [10,25,50];
@@ -74,8 +75,8 @@ const UserDetail = () => {
     const fetchSavingsAndLoans = async () => {
       try {
         const [sRes, lRes] = await Promise.all([
-          fetch(`https://viva-api-366k.onrender.com/api/savings/${userId}`, { signal: controller.signal }),
-          fetch(`https://viva-api-366k.onrender.com/api/loans/${userId}`, { signal: controller.signal })
+          fetch(`${APP_BASE_URL}/savings/${userId}`, { signal: controller.signal }),
+          fetch(`${APP_BASE_URL}/loans/${userId}`, { signal: controller.signal })
         ]);
 
         const sJson = sRes.ok ? await sRes.json() : null;
@@ -116,7 +117,7 @@ const UserDetail = () => {
 
         // fetch pay-using-savings for this user
         try {
-          const pRes = await fetch(`https://viva-api-366k.onrender.com/api/pay-loan-using-savings/${userId}`, { signal: controller.signal });
+          const pRes = await fetch(`${APP_BASE_URL}/pay-loan-using-savings/${userId}`, { signal: controller.signal });
           const pJson = pRes.ok ? await pRes.json() : null;
           if (pJson && Array.isArray(pJson)) {
             setPayUsingSavingData(pJson.map(p => ({
@@ -137,7 +138,7 @@ const UserDetail = () => {
 
         // fetch distributions for this user
         try {
-          const dRes = await fetch(`https://viva-api-366k.onrender.com/api/distributions/${userId}`, { signal: controller.signal });
+          const dRes = await fetch(`${APP_BASE_URL}/distributions/${userId}`, { signal: controller.signal });
           const dJson = dRes.ok ? await dRes.json() : null;
           if (dJson && Array.isArray(dJson)) {
             setDistributionData(dJson.map(d => ({
