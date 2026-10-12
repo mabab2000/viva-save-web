@@ -1,4 +1,4 @@
-export const APP_BASE_URL = import.meta.env.VITE_APP_BASE_URL || "https://viva-api-366k.onrender.com/api";
+export const APP_BASE_URL = import.meta.env.VITE_APP_BASE_URL || "https://viva-api-5d4f.onrender.com/api";
 
 // Google OAuth Configuration
 export const GOOGLE_OAUTH_CONFIG = {
